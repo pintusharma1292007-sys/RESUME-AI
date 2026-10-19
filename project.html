@@ -1,0 +1,3494 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ResumeAI - Smart AI Resume Builder</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      background:
+        radial-gradient(circle at top left, rgba(96, 165, 250, 0.32), transparent 28%),
+        radial-gradient(circle at bottom right, rgba(59, 130, 246, 0.22), transparent 30%),
+        linear-gradient(135deg, #eef4ff 0%, #dfeafe 38%, #f8fbff 100%);
+      padding: 28px 20px;
+      min-height: 100vh;
+      position: relative;
+    }
+
+    body::before,
+    body::after {
+      content: "";
+      position: fixed;
+      border-radius: 50%;
+      filter: blur(60px);
+      opacity: 0.45;
+      z-index: 0;
+      pointer-events: none;
+      animation: floatGlow 18s ease-in-out infinite alternate;
+    }
+
+    body::before {
+      width: 260px;
+      height: 260px;
+      background: rgba(147, 197, 253, 0.7);
+      top: 5%;
+      left: 8%;
+    }
+
+    body::after {
+      width: 220px;
+      height: 220px;
+      background: rgba(191, 219, 254, 0.9);
+      bottom: 8%;
+      right: 6%;
+      animation-delay: 3s;
+    }
+
+    .container {
+      position: relative;
+      z-index: 1;
+      max-width: 1000px;
+      margin: auto;
+    }
+
+    header {
+      background: linear-gradient(135deg, #2563eb, #1d4ed8 60%, #0f172a);
+      color: white;
+      padding: 26px 20px;
+      text-align: center;
+      border-radius: 24px;
+      margin-bottom: 22px;
+      box-shadow: 0 22px 42px rgba(37, 99, 235, 0.25);
+      position: relative;
+      overflow: hidden;
+      border: 1px solid rgba(255,255,255,0.18);
+      backdrop-filter: blur(10px);
+    }
+
+    header::before {
+      content: "";
+      position: absolute;
+      inset: -30% auto auto -10%;
+      width: 220px;
+      height: 220px;
+      background: rgba(255, 255, 255, 0.12);
+      border-radius: 50%;
+      filter: blur(8px);
+    }
+
+    header h1 {
+      position: relative;
+      z-index: 1;
+      font-size: clamp(2rem, 4vw, 2.8rem);
+      letter-spacing: 0.5px;
+    }
+
+    header p {
+      position: relative;
+      z-index: 1;
+      margin-top: 8px;
+      opacity: 0.95;
+    }
+
+    .card {
+      background: rgba(255, 255, 255, 0.82);
+      padding: 24px;
+      border-radius: 22px;
+      box-shadow: 0 18px 30px rgba(15, 23, 42, 0.08);
+      margin-bottom: 20px;
+      border: 1px solid rgba(148, 163, 184, 0.2);
+      backdrop-filter: blur(12px);
+      transition: transform 0.24s ease, box-shadow 0.24s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 24px 40px rgba(15, 23, 42, 0.12);
+    }
+
+    .animate-entry {
+      animation: fadeInUp 0.55s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+    }
+
+    .tap-burst {
+      animation: tapPulse 0.35s ease;
+    }
+
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(18px) scale(0.98);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    @keyframes tapPulse {
+      0% {
+        transform: scale(1);
+        box-shadow: 0 0 0 rgba(59, 130, 246, 0.2);
+      }
+      35% {
+        transform: scale(0.98);
+        box-shadow: 0 0 0 12px rgba(96, 165, 250, 0.16);
+      }
+      100% {
+        transform: scale(1);
+        box-shadow: 0 0 0 rgba(59, 130, 246, 0);
+      }
+    }
+
+    .login-shell {
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 24px;
+      align-items: stretch;
+    }
+
+    .login-hero {
+      background: linear-gradient(135deg, #0f172a, #1d4ed8 55%, #60a5fa);
+      color: #fff;
+      border-radius: 22px;
+      padding: 26px 24px;
+      position: relative;
+      overflow: hidden;
+      min-height: 230px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.18), 0 18px 30px rgba(37, 99, 235, 0.2);
+    }
+
+    .login-hero::before {
+      content: "";
+      position: absolute;
+      right: -40px;
+      top: -30px;
+      width: 180px;
+      height: 180px;
+      background: rgba(255,255,255,0.12);
+      border-radius: 50%;
+    }
+
+    .login-hero .welcome-pill {
+      display: inline-flex;
+      align-items: center;
+      align-self: flex-start;
+      background: rgba(255,255,255,0.14);
+      border: 1px solid rgba(255,255,255,0.22);
+      color: #eff6ff;
+      font-size: 0.76rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 8px 12px;
+      border-radius: 999px;
+      margin-bottom: 18px;
+      backdrop-filter: blur(4px);
+    }
+
+    .login-hero h3 {
+      position: relative;
+      z-index: 1;
+      font-size: clamp(2rem, 4vw, 3rem);
+      line-height: 1.1;
+      margin-bottom: 12px;
+    }
+
+    .login-hero p {
+      position: relative;
+      z-index: 1;
+      color: rgba(255,255,255,0.85);
+      max-width: 28ch;
+      line-height: 1.6;
+    }
+
+    .login-form-box {
+      padding: 26px 22px;
+      background: rgba(255,255,255,0.85);
+      border-radius: 18px;
+    }
+
+    .login-form-box h2 {
+      margin-bottom: 18px;
+      font-size: 1.7rem;
+    }
+
+    .login-success {
+      display: none;
+      margin-top: 16px;
+      padding: 14px 16px;
+      border-radius: 14px;
+      background: linear-gradient(135deg, #dcfce7, #bbf7d0);
+      border: 1px solid rgba(34, 197, 94, 0.3);
+      color: #166534;
+      font-weight: 700;
+      box-shadow: 0 12px 20px rgba(34, 197, 94, 0.12);
+      animation: thankYouFade 0.4s ease;
+    }
+
+    .login-success strong {
+      display: block;
+      font-size: 1.05rem;
+      margin-bottom: 4px;
+    }
+
+    .login-actions {
+      display: grid;
+      gap: 10px;
+    }
+
+    .login-actions button {
+      width: 100%;
+      margin-top: 4px;
+    }
+
+    h2 {
+      margin-bottom: 15px;
+      color: #1e3a8a;
+      font-size: 1.7rem;
+    }
+
+    input, textarea, select {
+      width: 100%;
+      padding: 12px 14px;
+      margin: 10px 0;
+      border: 1px solid #dbe4f2;
+      border-radius: 12px;
+      background: linear-gradient(180deg, #f8fbff, #f1f6ff);
+      transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+      font-size: 1rem;
+      color: #0f172a;
+    }
+
+    input:focus, textarea:focus, select:focus {
+      outline: none;
+      border-color: #60a5fa;
+      box-shadow: 0 0 0 4px rgba(96, 165, 250, 0.18), 0 10px 18px rgba(96, 165, 250, 0.12);
+      transform: translateY(-1px);
+    }
+
+    button {
+      background: linear-gradient(135deg, #2563eb, #3b82f6);
+      color: white;
+      border: none;
+      padding: 12px 20px;
+      border-radius: 12px;
+      cursor: pointer;
+      margin-top: 12px;
+      font-weight: bold;
+      box-shadow: 0 12px 22px rgba(59, 130, 246, 0.22);
+      transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
+      letter-spacing: 0.02em;
+    }
+
+    button:hover {
+      background: linear-gradient(135deg, #1d4ed8, #2563eb);
+      transform: translateY(-1px);
+      box-shadow: 0 12px 22px rgba(37, 99, 235, 0.28);
+      filter: brightness(1.02);
+    }
+
+    .resume {
+      background: linear-gradient(180deg, #ffffff, #f9fbff);
+      padding: 26px;
+      margin-top: 24px;
+      border-radius: 22px;
+      display: none;
+      box-shadow: 0 18px 30px rgba(15, 23, 42, 0.08);
+      border: 1px solid rgba(148, 163, 184, 0.2);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .resume::before {
+      content: "";
+      position: absolute;
+      inset: 0 auto auto 0;
+      width: 100%;
+      height: 5px;
+      background: linear-gradient(90deg, #2563eb, #60a5fa, #93c5fd);
+    }
+
+    .thank-you-card {
+      display: none;
+      margin-top: 24px;
+      background: linear-gradient(135deg, #f0f9ff, #dbeafe 45%, #eff6ff);
+      border: 1px solid rgba(96, 165, 250, 0.25);
+      border-radius: 22px;
+      padding: 22px 20px;
+      box-shadow: 0 18px 30px rgba(37, 99, 235, 0.12);
+      text-align: center;
+      color: #1e3a8a;
+      position: relative;
+      overflow: hidden;
+      animation: thankYouFade 0.6s ease;
+    }
+
+    .thank-you-card::before {
+      content: "";
+      position: absolute;
+      inset: 0 auto auto 0;
+      width: 100%;
+      height: 5px;
+      background: linear-gradient(90deg, #2563eb, #60a5fa, #93c5fd);
+    }
+
+    .thank-you-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #2563eb, #60a5fa);
+      color: #fff;
+      font-size: 1.5rem;
+      margin-bottom: 12px;
+      box-shadow: 0 12px 22px rgba(37, 99, 235, 0.25);
+    }
+
+    .thank-you-card h3 {
+      margin-bottom: 8px;
+      font-size: 1.7rem;
+      color: #1d4ed8;
+      letter-spacing: 0.04em;
+    }
+
+    .thank-you-card p {
+      margin: 0;
+      line-height: 1.8;
+      font-size: 1rem;
+      max-width: 680px;
+      margin-inline: auto;
+    }
+
+    @keyframes thankYouFade {
+      from {
+        opacity: 0;
+        transform: translateY(12px) scale(0.98);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    .resume h1 {
+      color: #1d4ed8;
+      margin-bottom: 14px;
+      font-size: clamp(2rem, 3vw, 2.6rem);
+    }
+
+    .resume h2 {
+      font-size: 1.3rem;
+      margin-top: 18px;
+      margin-bottom: 8px;
+    }
+
+    .skill-box {
+      background: linear-gradient(135deg, #dbeafe, #e0e7ff);
+      color: #1e3a8a;
+      padding: 7px 12px;
+      display: inline-block;
+      margin: 5px;
+      border-radius: 999px;
+      font-size: 0.92rem;
+      font-weight: 600;
+      border: 1px solid rgba(96, 165, 250, 0.25);
+      animation: popIn 0.3s ease;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .skill-box:hover {
+      transform: translateY(-2px) scale(1.02);
+      box-shadow: 0 8px 18px rgba(96, 165, 250, 0.2);
+    }
+
+    .summary-box {
+      background: linear-gradient(135deg, #f8fafc, #eef4ff);
+      padding: 18px 18px 16px;
+      border-left: 5px solid #2563eb;
+      margin-top: 12px;
+      border-radius: 12px;
+      color: #1e293b;
+      line-height: 1.6;
+    }
+
+    @keyframes popIn {
+      from {
+        opacity: 0;
+        transform: translateY(8px) scale(0.98);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    @keyframes floatGlow {
+      0% {
+        transform: translateY(0px) scale(1);
+      }
+      100% {
+        transform: translateY(-18px) scale(1.08);
+      }
+    }
+
+    .login-section {
+      display: block;
+    }
+
+    .form-section {
+      display: none;
+    }
+
+    @media (max-width: 760px) {
+      .login-shell {
+        grid-template-columns: 1fr;
+      }
+
+      .login-hero {
+        min-height: 180px;
+      }
+    }
+
+    @media print {
+      body {
+        background: white;
+        padding: 0;
+      }
+
+      .container > :not(#resumePreview) {
+        display: none !important;
+      }
+
+      .resume {
+        display: block !important;
+        margin: 0;
+        box-shadow: none;
+      }
+    }
+
+    :root {
+      color-scheme: dark;
+      --page: #080f20;
+      --panel: #101a30;
+      --panel-raised: #14213a;
+      --line: #24324d;
+      --muted: #94a3bf;
+      --text: #e9efff;
+      --accent: #685cff;
+      --accent-bright: #8178ff;
+      --green: #38d6a3;
+    }
+
+    body {
+      padding: 0;
+      color: var(--text);
+      background: radial-gradient(ellipse at 60% 0%, #172648 0, var(--page) 48%);
+      font-family: Inter, "Segoe UI", Arial, sans-serif;
+    }
+
+    body::before,
+    body::after {
+      display: none;
+    }
+
+    .login-screen[hidden],
+    .app-shell[hidden],
+    .profile-dropdown[hidden] {
+      display: none !important;
+    }
+
+    .login-screen {
+      display: grid;
+      min-height: 100vh;
+      place-items: center;
+      padding: 32px 20px;
+      background:
+        radial-gradient(circle at 18% 15%, rgba(104, 92, 255, 0.16), transparent 32%),
+        radial-gradient(circle at 85% 85%, rgba(56, 214, 163, 0.08), transparent 28%);
+    }
+
+    .login-layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1.1fr) minmax(320px, 0.8fr);
+      width: min(920px, 100%);
+      overflow: hidden;
+      background: #101a30;
+      border: 1px solid #293957;
+      border-radius: 22px;
+      box-shadow: 0 30px 80px rgba(0, 0, 0, 0.35);
+    }
+
+    .login-brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 32px;
+      color: #f4f6ff;
+      font-size: 16px;
+      font-weight: 700;
+    }
+
+    .login-brand-icon {
+      display: grid;
+      width: 38px;
+      height: 38px;
+      place-items: center;
+      border-radius: 11px;
+      background: linear-gradient(145deg, #8178ff, #5145dc);
+      font-size: 20px;
+    }
+
+    .login-hero {
+      min-height: 430px;
+      padding: 38px;
+      background:
+        radial-gradient(circle at 85% 15%, rgba(255, 255, 255, 0.14), transparent 24%),
+        linear-gradient(145deg, #101b35, #273d75 65%, #5146b9);
+      color: #fff;
+    }
+
+    .login-hero .welcome-pill {
+      display: inline-flex;
+      margin-bottom: 17px;
+      padding: 7px 10px;
+      color: #dedbff;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      border-radius: 99px;
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .login-hero h1 {
+      max-width: 12ch;
+      margin: 0 0 13px;
+      color: #fff;
+      font-size: clamp(2rem, 4vw, 3.2rem);
+      line-height: 1.08;
+    }
+
+    .login-hero p {
+      max-width: 38ch;
+      color: #d0daf1;
+      font-size: 13px;
+      line-height: 1.7;
+    }
+
+    .login-benefits {
+      display: grid;
+      gap: 11px;
+      margin-top: 27px;
+      color: #e3eaff;
+      font-size: 11px;
+    }
+
+    .login-panel {
+      align-self: center;
+      padding: 36px 30px;
+    }
+
+    .login-panel h2 {
+      margin: 0 0 7px;
+      color: #f0f3ff;
+      font-size: 22px;
+    }
+
+    .login-panel > p {
+      margin: 0 0 21px;
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 1.6;
+    }
+
+    .login-field {
+      margin-bottom: 13px;
+    }
+
+    .login-field label {
+      display: block;
+      margin-bottom: 6px;
+      color: #d0d9eb;
+      font-size: 10px;
+      font-weight: 600;
+    }
+
+    .login-field input {
+      width: 100%;
+      margin: 0;
+      padding: 11px 12px;
+      color: #edf2ff;
+      background: #0b1425;
+      border: 1px solid #2a3956;
+      border-radius: 8px;
+      font-size: 12px;
+    }
+
+    .login-field input:focus {
+      outline: none;
+      border-color: #7167ff;
+      box-shadow: 0 0 0 3px rgba(104, 92, 255, 0.14);
+      transform: none;
+    }
+
+    .login-submit {
+      width: 100%;
+      margin: 7px 0 0;
+      padding: 12px;
+      background: linear-gradient(135deg, #7167ff, #5149e8);
+      box-shadow: 0 8px 19px rgba(86, 74, 242, 0.25);
+      font-size: 12px;
+    }
+
+    .login-note {
+      margin-top: 14px !important;
+      color: #8493af !important;
+      font-size: 9px !important;
+    }
+
+    .login-error {
+      min-height: 16px;
+      margin-top: 10px;
+      color: #ff9caa;
+      font-size: 10px;
+    }
+
+    .container {
+      max-width: none;
+      margin: 0;
+    }
+
+    .app-shell {
+      display: grid;
+      grid-template-columns: 205px minmax(0, 1fr);
+      min-height: 100vh;
+    }
+
+    .sidebar {
+      position: sticky;
+      top: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 22px;
+      height: 100vh;
+      padding: 22px 14px;
+      background: rgba(10, 18, 36, 0.96);
+      border-right: 1px solid #1d2b46;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 0 7px 17px;
+      border-bottom: 1px solid #1d2b46;
+    }
+
+    .brand-icon {
+      display: grid;
+      width: 38px;
+      height: 38px;
+      place-items: center;
+      border-radius: 11px;
+      background: linear-gradient(145deg, #8178ff, #5145dc);
+      font-size: 20px;
+    }
+
+    .brand strong,
+    .brand small {
+      display: block;
+    }
+
+    .brand strong {
+      font-size: 16px;
+    }
+
+    .brand small {
+      margin-top: 3px;
+      color: var(--muted);
+      font-size: 10px;
+    }
+
+    .side-nav {
+      display: grid;
+      gap: 6px;
+    }
+
+    .side-nav button,
+    .topbar button {
+      margin: 0;
+      box-shadow: none;
+    }
+
+    .side-nav button {
+      width: 100%;
+      padding: 11px 10px;
+      color: #aebbd3;
+      text-align: left;
+      background: transparent;
+      border: 1px solid transparent;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .side-nav button:hover,
+    .side-nav button.active {
+      color: #fff;
+      background: #242d63;
+      border-color: #343e83;
+      transform: none;
+    }
+
+    .side-nav button span {
+      display: inline-block;
+      width: 23px;
+      color: #c2cbff;
+    }
+
+    .steps .step {
+      position: relative;
+      display: grid;
+      justify-items: center;
+      gap: 6px;
+      width: auto;
+      padding: 0;
+      margin: 0;
+      color: #8998b5;
+      background: transparent;
+      border: 0;
+      border-radius: 0;
+      font-size: 10px;
+      font-weight: 400;
+      text-align: center;
+      box-shadow: none;
+    }
+
+    .steps .step:hover {
+      color: #c9c4ff;
+      background: transparent;
+      border: 0;
+      transform: none;
+      box-shadow: none;
+    }
+
+    .steps .step span {
+      display: grid;
+      width: 27px;
+      height: 27px;
+      place-items: center;
+      border: 1px solid #475775;
+      border-radius: 50%;
+      background: #111d34;
+      color: #c0cce2;
+      z-index: 1;
+    }
+
+    .steps .step:not(:last-child)::after {
+      position: absolute;
+      top: 13px;
+      left: calc(50% + 17px);
+      width: calc(100% - 34px);
+      height: 1px;
+      background: #35445f;
+      content: "";
+    }
+
+    .steps .step.active {
+      color: #b7b1ff;
+    }
+
+    .steps .step.active span {
+      color: white;
+      background: var(--accent);
+      border-color: var(--accent);
+    }
+
+    .steps .step.completed span {
+      color: white;
+      background: #268f77;
+      border-color: #38d6a3;
+    }
+
+    .sidebar-promo {
+      margin-top: 7px;
+      padding: 15px 12px;
+      background: linear-gradient(145deg, #171f49, #121a32);
+      border: 1px solid #303b72;
+      border-radius: 13px;
+      color: #dbe1ff;
+      font-size: 11px;
+      line-height: 1.55;
+    }
+
+    .sidebar-promo strong {
+      display: block;
+      margin-bottom: 5px;
+      font-size: 12px;
+    }
+
+    .dashboard-content {
+      min-width: 0;
+    }
+
+    .topbar {
+      display: flex;
+      position: relative;
+      z-index: 10;
+      overflow: visible;
+      height: 64px;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      padding: 0 25px;
+      color: var(--text);
+      background: rgba(12, 21, 40, 0.82);
+      border-bottom: 1px solid #1d2b46;
+      text-align: left;
+      border-radius: 0;
+      box-shadow: none;
+      backdrop-filter: blur(12px);
+    }
+
+    .topbar h1 {
+      font-size: 18px;
+      letter-spacing: 0;
+    }
+
+    .topbar p {
+      margin-top: 2px;
+      color: var(--muted);
+      font-size: 10px;
+    }
+
+    .topbar-search {
+      width: min(360px, 38vw);
+      padding: 9px 13px;
+      color: #bdc9e1;
+      background: #1a2745;
+      border: 1px solid #293957;
+      border-radius: 999px;
+      font-size: 11px;
+    }
+
+    .topbar-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .topbar-actions button {
+      padding: 8px 11px;
+      background: #1a2745;
+      border: 1px solid #293957;
+      font-size: 11px;
+    }
+
+    .topbar-actions .profile-trigger {
+      display: grid;
+      width: 36px;
+      height: 36px;
+      padding: 0;
+      place-items: center;
+      color: #e7e4ff;
+      background: linear-gradient(145deg, #9b5cff, #614cff);
+      border: 1px solid rgba(211, 202, 255, 0.35);
+      border-radius: 50%;
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .profile-trigger-icon {
+      display: grid;
+      place-items: center;
+      color: #fff;
+    }
+
+    .profile-menu {
+      position: relative;
+    }
+
+    .profile-dropdown {
+      position: absolute;
+      z-index: 5;
+      top: calc(100% + 9px);
+      right: 0;
+      width: 220px;
+      padding: 12px;
+      background: #111d34;
+      border: 1px solid #34445f;
+      border-radius: 11px;
+      box-shadow: 0 14px 30px rgba(0, 0, 0, 0.32);
+    }
+
+    .profile-dropdown strong,
+    .profile-dropdown span {
+      display: block;
+      overflow-wrap: anywhere;
+    }
+
+    .profile-dropdown strong {
+      margin-bottom: 4px;
+      color: #edf2ff;
+      font-size: 11px;
+    }
+
+    .profile-dropdown span {
+      margin-bottom: 10px;
+      color: var(--muted);
+      font-size: 10px;
+    }
+
+    .profile-dropdown button {
+      width: 100%;
+      color: #ffc1c9;
+      background: #2a1a2b;
+      border: 1px solid #593044;
+      border-radius: 7px;
+      text-align: left;
+    }
+
+    .workspace {
+      display: grid;
+      grid-template-columns: minmax(400px, 1.35fr) minmax(260px, 0.75fr);
+      gap: 20px;
+      max-width: 1510px;
+      margin: 0 auto;
+      padding: 24px;
+      align-items: start;
+    }
+
+    .builder-column,
+    .preview-column {
+      min-width: 0;
+    }
+
+    .welcome {
+      margin: 1px 0 18px;
+    }
+
+    .welcome h2 {
+      margin: 0 0 5px;
+      color: #edf2ff;
+      font-size: 21px;
+    }
+
+    .welcome p,
+    .section-subtitle {
+      margin: 0;
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 1.5;
+    }
+
+    .steps {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      margin: 17px 3px 18px;
+    }
+
+    .step {
+      position: relative;
+      display: grid;
+      justify-items: center;
+      gap: 6px;
+      color: #8998b5;
+      font-size: 10px;
+    }
+
+    .step:not(:last-child)::after {
+      position: absolute;
+      top: 13px;
+      left: calc(50% + 17px);
+      width: calc(100% - 34px);
+      height: 1px;
+      background: #35445f;
+      content: "";
+    }
+
+    .step span {
+      display: grid;
+      width: 27px;
+      height: 27px;
+      place-items: center;
+      border: 1px solid #475775;
+      border-radius: 50%;
+      background: #111d34;
+      color: #c0cce2;
+      z-index: 1;
+    }
+
+    .step.active {
+      color: #b7b1ff;
+    }
+
+    .step.active span {
+      color: white;
+      background: var(--accent);
+      border-color: var(--accent);
+    }
+
+    .card {
+      margin-bottom: 14px;
+      padding: 19px;
+      background: linear-gradient(145deg, rgba(18, 29, 51, 0.98), rgba(15, 25, 45, 0.98));
+      border: 1px solid #23324e;
+      border-radius: 13px;
+      box-shadow: 0 14px 30px rgba(0, 0, 0, 0.18);
+      backdrop-filter: none;
+      transition: border-color 0.2s ease;
+    }
+
+    .card:hover {
+      transform: none;
+      border-color: #344666;
+      box-shadow: 0 14px 30px rgba(0, 0, 0, 0.2);
+    }
+
+    .form-section {
+      display: block;
+    }
+
+    .login-section {
+      display: none !important;
+    }
+
+    .section-heading {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: flex-start;
+      margin-bottom: 13px;
+    }
+
+    .section-heading h2,
+    .preview-card h2,
+    .cover-card h2,
+    .saved-card h2 {
+      margin: 0 0 5px;
+      color: #e9efff;
+      font-size: 14px;
+    }
+
+    .section-heading .heading-icon {
+      display: grid;
+      width: 33px;
+      height: 33px;
+      place-items: center;
+      border-radius: 10px;
+      background: #252254;
+      color: #aaa4ff;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 0 12px;
+    }
+
+    .field {
+      min-width: 0;
+    }
+
+    .field.wide {
+      grid-column: 1 / -1;
+    }
+
+    .step-panel[hidden] {
+      display: none !important;
+    }
+
+    .field label {
+      display: block;
+      margin: 8px 0 4px;
+      color: #c5d0e5;
+      font-size: 10px;
+      font-weight: 600;
+    }
+
+    .field input,
+    .field textarea,
+    .field select,
+    .cover-card textarea {
+      width: 100%;
+      margin: 0 0 7px;
+      padding: 10px 11px;
+      color: #e5ecfb;
+      background: #0d172a;
+      border: 1px solid #2a3956;
+      border-radius: 8px;
+      font-size: 11px;
+    }
+
+    .field input::placeholder,
+    .field textarea::placeholder,
+    .cover-card textarea::placeholder {
+      color: #71809c;
+    }
+
+    .field input:focus,
+    .field textarea:focus,
+    .field select:focus,
+    .cover-card textarea:focus {
+      outline: none;
+      border-color: #7167ff;
+      box-shadow: 0 0 0 3px rgba(104, 92, 255, 0.14);
+      transform: none;
+    }
+
+    input,
+    textarea,
+    select {
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    input:focus,
+    textarea:focus,
+    select:focus {
+      transform: none;
+    }
+
+    .field textarea {
+      min-height: 67px;
+      resize: vertical;
+    }
+
+    .form-actions {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      margin-top: 6px;
+    }
+
+    .form-actions button,
+    .primary-action {
+      margin-top: 0;
+      padding: 10px 13px;
+      background: linear-gradient(135deg, #7167ff, #5149e8);
+      box-shadow: 0 7px 17px rgba(86, 74, 242, 0.23);
+      font-size: 11px;
+    }
+
+    .form-actions button.secondary {
+      color: #bec9df;
+      background: #111d34;
+      border: 1px solid #2d3d5c;
+      box-shadow: none;
+    }
+
+    #skillsArea {
+      margin: 10px 0;
+      padding: 12px;
+      background: #0d172a;
+      border: 1px solid #253450;
+      border-radius: 9px;
+    }
+
+    #skillsArea h3 {
+      margin-bottom: 7px;
+      color: #dbe3f6;
+      font-size: 11px;
+    }
+
+    #skillsArea p {
+      margin-top: 7px;
+      color: var(--muted);
+      font-size: 10px;
+    }
+
+    .skill-box {
+      margin: 3px 4px 3px 0;
+      padding: 5px 8px;
+      color: #cad3eb;
+      background: #192640;
+      border: 1px solid #31415e;
+      border-radius: 6px;
+      font-size: 9px;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .skill-box.selected {
+      color: #dedcff;
+      background: #302d65;
+      border-color: #7167ff;
+    }
+
+    .skill-box:hover {
+      transform: none;
+      box-shadow: none;
+    }
+
+    .summary-box {
+      min-height: 44px;
+      margin-top: 8px;
+      padding: 11px;
+      color: #cbd4e8;
+      background: #101a2e;
+      border-left: 3px solid #766cff;
+      border-radius: 7px;
+      font-size: 10px;
+      line-height: 1.55;
+    }
+
+    .summary-box:empty {
+      display: none;
+    }
+
+    .preview-column {
+      position: sticky;
+      top: 82px;
+    }
+
+    .preview-card {
+      padding: 14px;
+    }
+
+    .preview-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 11px;
+    }
+
+    .live-pill {
+      padding: 4px 7px;
+      color: #68e4bb;
+      background: rgba(56, 214, 163, 0.1);
+      border: 1px solid rgba(56, 214, 163, 0.25);
+      border-radius: 99px;
+      font-size: 9px;
+    }
+
+    .live-preview {
+      min-height: 370px;
+      padding: 19px 17px;
+      color: #17223a;
+      background: #f4f7fc;
+      border-radius: 7px;
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.18);
+      font-family: Arial, sans-serif;
+    }
+
+    .live-preview h3 {
+      margin: 0 0 4px;
+      color: #17223a;
+      font-size: 16px;
+    }
+
+    .live-preview .preview-career {
+      margin: 0 0 11px;
+      color: #64728a;
+      font-size: 9px;
+    }
+
+    .live-preview .preview-contact {
+      padding-bottom: 10px;
+      color: #4b5870;
+      border-bottom: 1px solid #d9e0eb;
+      font-size: 8px;
+      line-height: 1.7;
+      overflow-wrap: anywhere;
+    }
+
+    .live-preview h4 {
+      margin: 12px 0 4px;
+      color: #293854;
+      font-size: 9px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    .live-preview p {
+      margin: 0;
+      color: #526079;
+      font-size: 8px;
+      line-height: 1.55;
+      white-space: pre-line;
+      overflow-wrap: anywhere;
+    }
+
+    .live-preview .preview-skills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+    }
+
+    .live-preview .preview-skills span {
+      padding: 3px 5px;
+      color: #40516d;
+      background: #e6ebf4;
+      border-radius: 4px;
+      font-size: 7px;
+    }
+
+    #resumePreview {
+      border-top: 5px solid #5149e8;
+    }
+
+    #resumePreview h1 {
+      padding-bottom: 8px;
+      border-bottom: 2px solid #dbe4f4;
+    }
+
+    #resumePreview .resume-sheet {
+      overflow: hidden;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      background: #fff;
+      color: #334155;
+      font-family: Arial, "Segoe UI", sans-serif;
+      print-color-adjust: exact;
+      -webkit-print-color-adjust: exact;
+    }
+
+    #resumePreview .resume-header {
+      padding: 30px 34px 24px;
+      color: #fff;
+      background: linear-gradient(120deg, #14233f, #293f71);
+    }
+
+    #resumePreview .resume-header h1 {
+      margin: 0 0 6px;
+      padding: 0;
+      color: #fff;
+      border: 0;
+      font-size: clamp(1.8rem, 4vw, 2.5rem);
+      line-height: 1.15;
+      overflow-wrap: anywhere;
+    }
+
+    #resumePreview .resume-headline {
+      margin: 0;
+      color: #c9d8f5;
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+    }
+
+    #resumePreview .resume-contact {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px 18px;
+      margin-top: 17px;
+      color: #e0e9f8;
+      font-size: 10px;
+      overflow-wrap: anywhere;
+    }
+
+    #resumePreview .resume-contact span {
+      display: inline-flex;
+      gap: 6px;
+      align-items: flex-start;
+    }
+
+    #resumePreview .resume-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.45fr) minmax(190px, 0.8fr);
+      gap: 24px;
+      padding: 26px 32px 32px;
+    }
+
+    #resumePreview .resume-main,
+    #resumePreview .resume-aside {
+      min-width: 0;
+    }
+
+    #resumePreview .resume-section {
+      margin: 0 0 21px;
+      break-inside: avoid;
+    }
+
+    #resumePreview .resume-section h2 {
+      margin: 0 0 9px;
+      padding-bottom: 7px;
+      color: #263a5c;
+      border-bottom: 1px solid #dce4ef;
+      font-family: Arial, "Segoe UI", sans-serif;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    #resumePreview .resume-section p {
+      margin: 0;
+      color: #46556d;
+      font-size: 11px;
+      line-height: 1.7;
+      white-space: pre-line;
+      overflow-wrap: anywhere;
+    }
+
+    #resumePreview .resume-section p + p {
+      margin-top: 9px;
+    }
+
+    #resumePreview .resume-skills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    #resumePreview .resume-skills .skill-box {
+      margin: 0;
+      padding: 6px 9px;
+      color: #344969;
+      background: #edf2f9;
+      border: 1px solid #dce5f1;
+      border-radius: 6px;
+      font-size: 10px;
+      font-weight: 600;
+      animation: none;
+      cursor: default;
+    }
+
+    .cover-card,
+    .saved-card {
+      padding: 14px;
+    }
+
+    .preview-actions {
+      display: grid;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .preview-actions button {
+      width: 100%;
+      margin: 0;
+    }
+
+    .preview-actions .secondary {
+      color: #cbd5e1;
+      background: #111d34;
+      border: 1px solid #2d3d5c;
+      box-shadow: none;
+    }
+
+    .cover-card textarea {
+      min-height: 78px;
+      margin-top: 9px;
+      resize: vertical;
+    }
+
+    .cover-card .primary-action {
+      width: 100%;
+    }
+
+    .career-tool-controls {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 13px;
+    }
+
+    .career-tool-controls label {
+      display: block;
+      margin-bottom: 5px;
+      color: #c5d0e5;
+      font-size: 10px;
+      font-weight: 600;
+    }
+
+    .career-tool-controls select {
+      width: 100%;
+      margin: 0;
+      padding: 9px 10px;
+      color: #e5ecfb;
+      background: #0d172a;
+      border: 1px solid #2a3956;
+      border-radius: 8px;
+      font-size: 11px;
+    }
+
+    .career-tool-controls button {
+      grid-column: 1 / -1;
+      margin: 0;
+    }
+
+    .career-guide-result {
+      display: grid;
+      gap: 10px;
+      margin-top: 13px;
+    }
+
+    .career-guide-result:empty {
+      display: none;
+    }
+
+    .career-guide-result h3 {
+      margin: 0 0 4px;
+      color: #e8edff;
+      font-size: 13px;
+    }
+
+    .career-guide-result h4 {
+      margin: 0 0 5px;
+      color: #a9a1ff;
+      font-size: 10px;
+    }
+
+    .career-guide-result p,
+    .career-guide-result li {
+      color: #b8c4da;
+      font-size: 10px;
+      line-height: 1.55;
+    }
+
+    .career-guide-result p {
+      margin: 0;
+    }
+
+    .career-guide-result ul {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+      padding: 0;
+      margin: 0;
+      list-style: none;
+    }
+
+    .career-guide-result li {
+      padding: 4px 7px;
+      color: #d6d1ff;
+      background: #24234c;
+      border: 1px solid #393671;
+      border-radius: 99px;
+    }
+
+    .career-chat[hidden] {
+      display: none !important;
+    }
+
+    .career-chat {
+      position: fixed;
+      z-index: 20;
+      inset: 0;
+      display: grid;
+      grid-template-rows: minmax(0, 1fr);
+      justify-items: end;
+      align-items: stretch;
+      background: rgba(2, 6, 18, 0.72);
+      backdrop-filter: blur(4px);
+    }
+
+    .career-chat-panel {
+      display: flex;
+      flex-direction: column;
+      width: min(440px, 100%);
+      height: 100vh;
+      height: 100dvh;
+      min-height: 0;
+      overflow: hidden;
+      color: var(--text);
+      background: #0d172a;
+      border-left: 1px solid #2a3956;
+      box-shadow: -18px 0 50px rgba(0, 0, 0, 0.35);
+    }
+
+    .career-chat-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 17px;
+      background: #111d34;
+      border-bottom: 1px solid #293957;
+    }
+
+    .career-chat-header-actions {
+      display: flex;
+      flex: 0 0 auto;
+      align-items: center;
+      gap: 7px;
+    }
+
+    .career-chat-header h2 {
+      margin: 0 0 4px;
+      color: #edf2ff;
+      font-size: 15px;
+    }
+
+    .career-chat-header p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 10px;
+    }
+
+    .career-chat-close {
+      flex: 0 0 auto;
+      margin: 0;
+      padding: 7px 10px;
+      color: #dce5f5;
+      background: #1a2745;
+      border: 1px solid #34445f;
+      box-shadow: none;
+    }
+
+    .career-chat-prompts {
+      display: grid;
+      gap: 8px;
+      margin: 12px 14px 0;
+      padding: 11px;
+      background: #111d34;
+      border: 1px solid #293957;
+      border-radius: 11px;
+    }
+
+    .career-chat-prompts strong {
+      color: #e9efff;
+      font-size: 11px;
+    }
+
+    .career-chat-prompts p {
+      margin: -4px 0 0;
+      color: var(--muted);
+      font-size: 10px;
+      line-height: 1.45;
+    }
+
+    .career-chat-prompts button {
+      width: 100%;
+      margin: 0;
+      padding: 8px 9px;
+      color: #dce5f5;
+      background: #17243b;
+      border: 1px solid #34445f;
+      border-radius: 8px;
+      box-shadow: none;
+      font-size: 10px;
+      line-height: 1.45;
+      text-align: left;
+    }
+
+    .career-chat-prompts button:hover {
+      background: #24234c;
+      border-color: #635bd0;
+    }
+
+    .career-chat-messages {
+      display: flex;
+      flex: 1 1 0;
+      flex-direction: column;
+      min-height: 0;
+      gap: 12px;
+      overflow-y: auto;
+      overscroll-behavior: contain;
+      scrollbar-gutter: stable;
+      -webkit-overflow-scrolling: touch;
+      padding: 16px 14px;
+    }
+
+    .career-chat-message {
+      max-width: 92%;
+      padding: 10px 12px;
+      color: #d9e2f2;
+      background: #17243b;
+      border: 1px solid #293957;
+      border-radius: 12px 12px 12px 3px;
+      font-size: 11px;
+      line-height: 1.6;
+      white-space: pre-line;
+      overflow-wrap: anywhere;
+    }
+
+    .career-chat-message.user {
+      align-self: flex-end;
+      color: #fff;
+      background: #403b92;
+      border-color: #5f57c8;
+      border-radius: 12px 12px 3px 12px;
+    }
+
+    .career-chat-form {
+      display: flex;
+      gap: 8px;
+      padding: 12px;
+      background: #111d34;
+      border-top: 1px solid #293957;
+    }
+
+    .career-chat-form input {
+      min-width: 0;
+      margin: 0;
+      padding: 11px 12px;
+      color: #e5ecfb;
+      background: #0b1425;
+      border: 1px solid #2a3956;
+      border-radius: 9px;
+      font-size: 11px;
+    }
+
+    .career-chat-form button {
+      flex: 0 0 auto;
+      margin: 0;
+      padding: 10px 13px;
+    }
+
+    .saved-list {
+      display: grid;
+      gap: 7px;
+      margin-top: 10px;
+    }
+
+    .saved-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 7px;
+      padding: 8px 9px;
+      color: #dce5f5;
+      background: #0d172a;
+      border: 1px solid #263652;
+      border-radius: 7px;
+      font-size: 10px;
+    }
+
+    .saved-open {
+      margin: 0;
+      padding: 6px 9px;
+      color: #dbe3ff;
+      background: #242d63;
+      border: 1px solid #343e83;
+      border-radius: 7px;
+      box-shadow: none;
+      font-size: 10px;
+    }
+
+    .saved-empty {
+      color: var(--muted);
+      font-size: 10px;
+    }
+
+    #resumePreview {
+      max-width: 850px;
+      margin: 15px auto;
+      color: #1e293b;
+      background: white;
+    }
+
+    #resumePreview h1,
+    #resumePreview h2 {
+      color: #1d4ed8;
+    }
+
+    #thankYouMessage {
+      max-width: 850px;
+      margin: 15px auto;
+      color: #dbeafe;
+      background: #13213b;
+      border-color: #263c60;
+    }
+
+    #thankYouMessage h3 {
+      color: #a9a1ff;
+    }
+
+    @media (max-width: 1050px) {
+      .app-shell {
+        grid-template-columns: 175px minmax(0, 1fr);
+      }
+
+      .workspace {
+        grid-template-columns: minmax(330px, 1.2fr) minmax(230px, 0.8fr);
+        gap: 14px;
+        padding: 18px;
+      }
+    }
+
+    @media (max-width: 760px) {
+      .login-screen {
+        padding: 18px 12px;
+      }
+
+      .login-layout {
+        grid-template-columns: 1fr;
+        max-width: 480px;
+      }
+
+      .login-hero {
+        min-height: auto;
+        padding: 24px;
+      }
+
+      .login-brand {
+        margin-bottom: 22px;
+      }
+
+      .login-hero h1 {
+        font-size: 30px;
+      }
+
+      .login-benefits {
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+        margin-top: 17px;
+      }
+
+      .login-panel {
+        padding: 25px 22px;
+      }
+
+      .app-shell {
+        display: block;
+      }
+
+      .sidebar {
+        position: static;
+        width: 100%;
+        height: auto;
+        padding: 10px 12px;
+        gap: 9px;
+        border-right: 0;
+        border-bottom: 1px solid #1d2b46;
+      }
+
+      .brand {
+        padding: 0 3px 8px;
+      }
+
+      .side-nav {
+        display: flex;
+        gap: 5px;
+        overflow-x: auto;
+        scrollbar-width: none;
+      }
+
+      .side-nav::-webkit-scrollbar {
+        display: none;
+      }
+
+      .side-nav button {
+        width: auto;
+        flex: 0 0 auto;
+        padding: 9px;
+      }
+
+      .side-nav button span {
+        width: auto;
+        margin-right: 5px;
+      }
+
+      .sidebar-promo {
+        display: none;
+      }
+
+      .topbar {
+        height: auto;
+        min-height: 58px;
+        padding: 10px 14px;
+      }
+
+      .topbar-search {
+        display: none;
+      }
+
+      .workspace {
+        display: flex;
+        flex-direction: column;
+        padding: 16px 12px;
+      }
+
+      .builder-column,
+      .preview-column {
+        width: 100%;
+      }
+
+      .preview-column {
+        position: static;
+      }
+
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .field.wide {
+        grid-column: auto;
+      }
+
+      .career-tool-controls {
+        grid-template-columns: 1fr;
+      }
+
+      .career-tool-controls button {
+        grid-column: auto;
+      }
+
+      #resumePreview .resume-grid {
+        grid-template-columns: 1fr;
+        gap: 0;
+        padding: 20px;
+      }
+
+      #resumePreview .resume-header {
+        padding: 24px 20px 19px;
+      }
+    }
+
+    @media (max-width: 430px) {
+      .topbar {
+        align-items: flex-start;
+      }
+
+      .topbar-actions .save-draft-button {
+        display: none;
+      }
+
+      .workspace {
+        padding-inline: 9px;
+      }
+
+      .card {
+        padding: 14px;
+      }
+    }
+
+    @media print {
+      body {
+        color: #111;
+        background: #fff;
+      }
+
+      .app-shell,
+      #loginScreen,
+      #thankYouMessage {
+        display: none !important;
+      }
+
+      #resumePreview {
+        display: block !important;
+        max-width: none;
+        margin: 0;
+        padding: 0;
+        box-shadow: none;
+        border: 0;
+      }
+
+      #resumePreview .resume-sheet {
+        border-radius: 0;
+      }
+
+      #resumePreview .resume-grid {
+        grid-template-columns: minmax(0, 1.45fr) minmax(170px, 0.8fr);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <main class="login-screen" id="loginScreen">
+      <div class="login-layout">
+        <section class="login-hero">
+          <div class="login-brand"><span class="login-brand-icon">▤</span>Resume AI</div>
+          <div class="welcome-pill">Your career starts here</div>
+          <h1>Build your next opportunity.</h1>
+          <p>Sign in to create a polished resume, explore career guidance, and keep your drafts together.</p>
+          <div class="login-benefits">
+            <span>✦ &nbsp;Guided resume builder</span>
+            <span>✦ &nbsp;Career advice chat</span>
+            <span>✦ &nbsp;Save drafts in this browser</span>
+          </div>
+        </section>
+        <section class="login-panel">
+          <h2>Welcome</h2>
+          <p>Enter your details to open your Resume AI workspace.</p>
+          <form id="loginForm" onsubmit="handleLogin(event)">
+            <div class="login-field">
+              <label for="loginName">Your name</label>
+              <input id="loginName" name="name" type="text" placeholder="e.g. Rahul Sharma" autocomplete="name" required>
+            </div>
+            <div class="login-field">
+              <label for="loginEmail">Email address</label>
+              <input id="loginEmail" name="email" type="email" placeholder="you@example.com" autocomplete="username" required>
+            </div>
+            <div class="login-field">
+              <label for="loginPassword">Password</label>
+              <input id="loginPassword" name="password" type="password" placeholder="Enter a password" autocomplete="current-password" required>
+            </div>
+            <button class="login-submit" type="submit">Sign in to Resume AI &nbsp;→</button>
+            <div class="login-error" id="loginError" role="alert"></div>
+          </form>
+          <p class="login-note">Demo sign-in: this standalone page checks that all fields are filled, but does not verify an account or store your password.</p>
+        </section>
+      </div>
+    </main>
+    <div class="app-shell" id="appShell" hidden>
+      <aside class="sidebar">
+        <div class="brand">
+          <div class="brand-icon">▤</div>
+          <div><strong>Resume AI</strong><small>Smart AI Resume Builder</small></div>
+        </div>
+        <nav class="side-nav" aria-label="Main navigation">
+          <button class="active" onclick="navigateTo('builderSection', this)"><span>▤</span>Create Resume</button>
+          <button onclick="navigateTo('savedSection', this)"><span>▣</span>My Resumes</button>
+          <button onclick="openCareerChat(this)"><span>✧</span>AI Suggestions</button>
+          <button onclick="navigateTo('coverSection', this)"><span>▧</span>Cover Letter</button>
+          <button onclick="openCareerTools(this)"><span>⌘</span>Career Tools</button>
+        </nav>
+        <div class="sidebar-promo">
+          <strong>✦ Let AI do the hard work!</strong>
+          Get personalized suggestions, stronger bullet points, and a resume that helps you stand out.
+        </div>
+      </aside>
+
+      <div class="dashboard-content">
+        <header class="topbar">
+          <div><h1>Resume AI</h1><p>Build. Apply. Grow.</p></div>
+          <input class="topbar-search" type="search" placeholder="✦  Build your dream resume with AI..." aria-label="Search resume tools">
+          <div class="topbar-actions">
+            <button class="save-draft-button" onclick="saveResume()">Save draft</button>
+            <div class="profile-menu">
+              <button class="profile-trigger" id="profileButton" type="button" aria-label="Open profile menu" aria-expanded="false" title="Open profile" onclick="toggleProfileMenu()">A</button>
+              <div class="profile-dropdown" id="profileDropdown" hidden>
+                <strong id="profileName">User</strong>
+                <span id="profileEmail"></span>
+                <button type="button" onclick="logout()">Log out</button>
+              </div>
+            </div>
+          </div>
+        </header>
+
+        <main class="workspace">
+          <section class="builder-column">
+            <div class="welcome">
+              <h2><span id="timeGreeting">Good Morning</span> 👋</h2>
+              <p>Let's create a professional resume that gets you noticed.</p>
+            </div>
+            <div class="steps" aria-label="Resume steps">
+              <button type="button" class="step active" data-step="0" onclick="goToStep(0)"><span>1</span>Personal Info</button>
+              <button type="button" class="step" data-step="1" onclick="goToStep(1)"><span>2</span>Education</button>
+              <button type="button" class="step" data-step="2" onclick="goToStep(2)"><span>3</span>Skills</button>
+              <button type="button" class="step" data-step="3" onclick="goToStep(3)"><span>4</span>Experience</button>
+            </div>
+
+            <section class="card form-section" id="builderSection">
+              <div class="section-heading" id="stepHeading">
+                <div><h2>♙ &nbsp;Personal Information</h2><p class="section-subtitle">Tell us about yourself</p></div>
+                <span class="heading-icon" id="stepHeadingIcon">♙</span>
+              </div>
+              <div class="step-panel" data-panel="0">
+                <div class="form-grid">
+                  <div class="field wide"><label for="name">Full Name <b>*</b></label><input type="text" id="name" placeholder="e.g. Rahul Sharma" required></div>
+                  <div class="field"><label for="email">Email Address</label><input type="email" id="email" placeholder="e.g. rahul@gmail.com"></div>
+                  <div class="field"><label for="phone">Phone Number</label><input type="tel" id="phone" placeholder="e.g. +91 98765 43210"></div>
+                  <div class="field wide"><label for="location">Location</label><input type="text" id="location" placeholder="e.g. Jaipur, Rajasthan"></div>
+                  <div class="field wide"><label for="linkedin">LinkedIn Profile (Optional)</label><input type="url" id="linkedin" placeholder="e.g. https://linkedin.com/in/yourname"></div>
+                </div>
+              </div>
+              <div class="step-panel" data-panel="1" hidden>
+                <div class="form-grid">
+                  <div class="field"><label for="subject">Education / Subject</label>
+                    <select id="subject" onchange="updateCareerOptions(); suggestSkills();">
+                      <option value="" selected>Select Subject</option>
+                      <option>Computer Science</option><option>Commerce</option><option>Business Administration</option><option>Arts</option><option>Engineering</option><option>Law</option><option>Education</option><option>Science</option><option>Mathematics</option><option>Psychology</option><option>Hospitality Management</option><option>Agriculture</option>
+                    </select>
+                  </div>
+                  <div class="field"><label for="career">Target Career</label>
+                    <select id="career" onchange="suggestSkills()">
+                      <option value="" selected>Select Career</option><option>Web Developer</option><option>Data Analyst</option><option>Software Engineer</option>
+                    </select>
+                  </div>
+                  <div class="field wide"><label for="education">Education Details</label><textarea id="education" placeholder="Degree, university, graduation year"></textarea></div>
+                </div>
+              </div>
+              <div class="step-panel" data-panel="2" hidden>
+                <div id="skillsArea"><h3>✦ Recommended Skills</h3><p>Choose a subject and career to see suggested skills.</p></div>
+                <div class="field" id="summarySection">
+                  <label for="summary">Career Objective / Short Summary</label>
+                  <div id="summary" class="summary-box"></div>
+                  <button class="secondary" onclick="generateSummary()">✦ Generate AI Summary</button>
+                </div>
+              </div>
+              <div class="step-panel" data-panel="3" hidden>
+                <div class="field"><label for="projects">Projects / Experience</label><textarea id="projects" placeholder="Add projects, internships, work experience, and achievements"></textarea></div>
+              </div>
+              <div class="form-actions" id="wizardActions">
+                <button class="secondary" id="previousStep" onclick="moveStep(-1)" disabled>← Back</button>
+                <button id="nextStep" onclick="moveStep(1)">Next: Education &nbsp;→</button>
+                <button id="finishResume" class="primary-action" style="display:none" onclick="generateResume()">Generate Resume &nbsp;→</button>
+              </div>
+            </section>
+
+            <section class="card cover-card" id="coverSection">
+              <h2>▧ &nbsp;Cover Letter</h2>
+              <p class="section-subtitle">Create a tailored opening paragraph for your next application.</p>
+              <textarea id="coverLetter" placeholder="Your generated cover letter will appear here..."></textarea>
+              <button class="primary-action" onclick="generateCoverLetter()">✦ Generate Cover Letter</button>
+            </section>
+
+            <section class="card saved-card" id="savedSection">
+              <h2>▣ &nbsp;My Resumes</h2>
+              <p class="section-subtitle">Your saved resume drafts stay in this browser.</p>
+              <div class="saved-list" id="savedList"><p class="saved-empty">No saved resumes yet. Use Save draft to keep your details.</p></div>
+            </section>
+          </section>
+
+          <aside class="preview-column">
+            <section class="card preview-card">
+              <div class="preview-head"><h2>◉ &nbsp;Resume Preview</h2><span class="live-pill">● Live Preview</span></div>
+              <div id="livePreview" class="live-preview">
+                <h3 id="previewName">Your Name</h3>
+                <p class="preview-career" id="previewCareer">Your target role will appear here</p>
+                <div class="preview-contact" id="previewContact">✉ yourname@email.com &nbsp; • &nbsp; +91 98765 43210<br>⌖ Your location</div>
+                <h4>Career Objective</h4><p id="previewSummary">A concise professional summary will appear here.</p>
+                <h4>Education</h4><p id="previewEducation">Add your education details.</p>
+                <h4>Skills</h4><div class="preview-skills" id="previewSkills"><span>Suggested skills</span></div>
+                <h4>Projects & Experience</h4><p id="previewProjects">Add a project or experience.</p>
+              </div>
+              <div class="preview-actions">
+                <button class="primary-action" onclick="generateResume()">Generate Resume</button>
+                <button class="secondary" onclick="downloadResumePdf()">Download PDF</button>
+              </div>
+            </section>
+
+            <section class="card" id="careerSection">
+              <h2>✦ &nbsp;Career Tools</h2>
+              <p class="section-subtitle">Choose a field to explore matching careers, key skills, and a practical starting roadmap.</p>
+              <div class="career-tool-controls">
+                <div>
+                  <label for="careerToolSubject">Study field</label>
+                  <select id="careerToolSubject" onchange="updateCareerToolRoles()">
+                    <option value="">Choose a field</option>
+                    <option>Computer Science</option><option>Commerce</option><option>Business Administration</option><option>Arts</option><option>Engineering</option><option>Law</option><option>Education</option><option>Science</option><option>Mathematics</option><option>Psychology</option><option>Hospitality Management</option><option>Agriculture</option>
+                  </select>
+                </div>
+                <div>
+                  <label for="careerToolRole">Career to explore</label>
+                  <select id="careerToolRole">
+                    <option value="">Choose a career</option>
+                  </select>
+                </div>
+                <button class="primary-action" onclick="exploreCareer()">Explore this career</button>
+              </div>
+              <div class="career-guide-result" id="careerGuideResult" aria-live="polite"></div>
+              <button class="secondary" style="width:100%;margin-top:10px;background:#111d34;border:1px solid #2d3d5c;color:#cbd5e1;box-shadow:none" onclick="openCareerChat()">Ask the career guide</button>
+            </section>
+          </aside>
+        </main>
+
+      </div>
+    </div>
+    <div id="resumePreview" class="resume"></div>
+    <div id="thankYouMessage" class="thank-you-card">
+      <div class="thank-you-badge">✨</div>
+      <h3>Thank You!</h3>
+      <p>Your resume is ready. Download it as a PDF or save a draft to return to it later.</p>
+    </div>
+    <div class="career-chat" id="careerChat" hidden>
+      <section class="career-chat-panel" role="dialog" aria-modal="true" aria-labelledby="careerChatTitle">
+        <header class="career-chat-header">
+          <div><h2 id="careerChatTitle">✦ Career Advice Chat</h2><p>Ask about career paths, skills, resumes, or next steps.</p></div>
+          <div class="career-chat-header-actions">
+            <button class="career-chat-close" type="button" aria-label="Refresh career chat" title="Start a new chat" onclick="resetCareerChat()">↻ Refresh</button>
+            <button class="career-chat-close" type="button" aria-label="Close career advice chat" onclick="closeCareerChat()">✕</button>
+          </div>
+        </header>
+        <div class="career-chat-prompts" aria-label="Prompt examples">
+          <strong>Samajh nahi aa raha kya poochna hai?</strong>
+          <p>In examples par click karo, ya apne words mein neeche message likho:</p>
+          <button type="button" onclick="askCareerPrompt('Main 12th mein commerce padh raha hoon. Mere liye career options batao.')">“Main 12th mein commerce padh raha hoon. Mere liye career options batao.”</button>
+          <button type="button" onclick="askCareerPrompt('Mujhe graphic designer banna hai. Kaunse skills seekhun?')">“Mujhe graphic designer banna hai. Kaunse skills seekhun?”</button>
+          <button type="button" onclick="askCareerPrompt('Mere liye ek simple 30-day career roadmap banao.')">“Mere liye ek simple 30-day career roadmap banao.”</button>
+        </div>
+        <div class="career-chat-messages" id="careerChatMessages" aria-live="polite" aria-relevant="additions">
+          <div class="career-chat-message">Hi! I can help you explore careers, skills, learning plans, and job-search advice. Tell me what you are studying or which role you are curious about.</div>
+        </div>
+        <form class="career-chat-form" id="careerChatForm" onsubmit="sendCareerMessage(event)">
+          <input id="careerChatInput" type="text" placeholder="Apna career question yahan likho..." autocomplete="off" aria-label="Message to career guide" required>
+          <button class="primary-action" type="submit">Send</button>
+        </form>
+      </section>
+    </div>
+  </div>
+
+    <script>
+    function getGreetingText() {
+      var hour = new Date().getHours();
+      if (hour < 12) {
+        return "Good Morning";
+      }
+      if (hour < 17) {
+        return "Good Afternoon";
+      }
+      if (hour < 21) {
+        return "Good Evening";
+      }
+      return "Good Night";
+    }
+
+    function updateProfile(userName, userEmail) {
+      var name = trimValue(userName);
+      var email = trimValue(userEmail);
+      var firstName = name.split(/\s+/)[0] || "there";
+      document.getElementById("profileName").textContent = name;
+      document.getElementById("profileEmail").textContent = email;
+      document.getElementById("profileButton").textContent = name.charAt(0).toUpperCase() || "A";
+      document.getElementById("profileButton").setAttribute("aria-label", "Open profile menu for " + name);
+      document.getElementById("timeGreeting").textContent = getGreetingText() + ", " + firstName;
+    }
+
+    function showDashboard(userName, userEmail) {
+      updateProfile(userName, userEmail);
+      document.getElementById("loginScreen").hidden = true;
+      document.getElementById("appShell").hidden = false;
+    }
+
+    function initializeLoginState() {
+      var userName = sessionStorage.getItem("resumeai-user-name");
+      var userEmail = sessionStorage.getItem("resumeai-user-email");
+      if (userName && userEmail) {
+        showDashboard(userName, userEmail);
+        return;
+      }
+      document.getElementById("loginScreen").hidden = false;
+      document.getElementById("appShell").hidden = true;
+    }
+
+    function handleLogin(event) {
+      event.preventDefault();
+      var userName = trimValue(document.getElementById("loginName").value);
+      var userEmail = trimValue(document.getElementById("loginEmail").value);
+      var password = document.getElementById("loginPassword").value;
+      var error = document.getElementById("loginError");
+
+      if (!userName || !userEmail || !password) {
+        error.textContent = "Please fill in your name, email, and password.";
+        return;
+      }
+      if (!document.getElementById("loginEmail").checkValidity()) {
+        error.textContent = "Please enter a valid email address.";
+        return;
+      }
+
+      sessionStorage.setItem("resumeai-user-name", userName);
+      sessionStorage.setItem("resumeai-user-email", userEmail);
+      document.getElementById("loginPassword").value = "";
+      error.textContent = "";
+      showDashboard(userName, userEmail);
+    }
+
+    function toggleProfileMenu() {
+      var dropdown = document.getElementById("profileDropdown");
+      var isOpening = dropdown.hidden;
+      dropdown.hidden = !isOpening;
+      document.getElementById("profileButton").setAttribute("aria-expanded", String(isOpening));
+    }
+
+    function logout() {
+      sessionStorage.removeItem("resumeai-user-name");
+      sessionStorage.removeItem("resumeai-user-email");
+      sessionStorage.removeItem("resumeai-signed-in");
+      location.reload();
+    }
+
+    document.addEventListener("click", function(event) {
+      var profileMenu = document.querySelector(".profile-menu");
+      if (profileMenu && !profileMenu.contains(event.target)) {
+        document.getElementById("profileDropdown").hidden = true;
+        document.getElementById("profileButton").setAttribute("aria-expanded", "false");
+      }
+    });
+
+    function trimValue(value) {
+      if (value === null || value === undefined) {
+        return "";
+      }
+      return String(value).replace(/^\s+|\s+$/g, "");
+    }
+
+    var currentStep = 0;
+    var stepDetails = [
+      { title: "Personal Information", subtitle: "Tell us about yourself", icon: "♙", next: "Next: Education" },
+      { title: "Education", subtitle: "Add your studies and target career", icon: "▤", next: "Next: Skills" },
+      { title: "Skills & Summary", subtitle: "Choose relevant skills and write your profile", icon: "✧", next: "Next: Experience" },
+      { title: "Projects & Experience", subtitle: "Showcase projects, internships, and work", icon: "⌘", next: "" }
+    ];
+
+    function goToStep(step) {
+      if (step < 0 || step >= stepDetails.length) {
+        return;
+      }
+      currentStep = step;
+      document.querySelectorAll(".step-panel").forEach(function(panel, index) {
+        panel.hidden = index !== currentStep;
+      });
+      document.querySelectorAll(".steps .step").forEach(function(button, index) {
+        button.classList.toggle("active", index === currentStep);
+        button.classList.toggle("completed", index < currentStep);
+        if (index === currentStep) {
+          button.setAttribute("aria-current", "step");
+        } else {
+          button.removeAttribute("aria-current");
+        }
+      });
+
+      var detail = stepDetails[currentStep];
+      document.querySelector("#stepHeading h2").textContent = detail.title;
+      document.querySelector("#stepHeading .section-subtitle").textContent = detail.subtitle;
+      document.getElementById("stepHeadingIcon").textContent = detail.icon;
+      document.getElementById("previousStep").disabled = currentStep === 0;
+      document.getElementById("nextStep").style.display = currentStep === stepDetails.length - 1 ? "none" : "";
+      document.getElementById("nextStep").textContent = detail.next + "  →";
+      document.getElementById("finishResume").style.display = currentStep === stepDetails.length - 1 ? "" : "none";
+    }
+
+    function moveStep(direction) {
+      var nextStep = currentStep + direction;
+      if (direction > 0 && currentStep === 0) {
+        var nameInput = document.getElementById("name");
+        if (!trimValue(nameInput.value)) {
+          alert("Please enter your full name to continue.");
+          nameInput.focus();
+          return;
+        }
+      }
+      if (nextStep >= 0 && nextStep < stepDetails.length) {
+        goToStep(nextStep);
+      }
+    }
+
+    function animateOnTap(target) {
+      var element = target && target.nodeType === 1 ? target : document.body;
+      element.classList.remove("tap-burst");
+      void element.offsetWidth;
+      element.classList.add("tap-burst");
+      setTimeout(function() {
+        element.classList.remove("tap-burst");
+      }, 350);
+    }
+
+    function addEntranceAnimation(selector) {
+      var elements = document.querySelectorAll(selector);
+      elements.forEach(function(element) {
+        element.classList.remove("animate-entry");
+        void element.offsetWidth;
+        element.classList.add("animate-entry");
+      });
+    }
+
+    document.addEventListener("click", function(event) {
+      var button = event.target && event.target.closest("button");
+      if (button) {
+        animateOnTap(button);
+      }
+    });
+
+    document.querySelectorAll(".card, .login-shell, .resume").forEach(function(element) {
+      element.classList.add("animate-entry");
+    });
+
+    var greetingElement = document.getElementById("timeGreeting");
+    if (greetingElement) {
+      greetingElement.textContent = getGreetingText();
+    }
+
+    var subjectCareerMap = {
+      "Computer Science": ["Web Developer", "Data Analyst", "Software Engineer", "Cybersecurity Analyst", "AI Engineer", "Game Developer", "Cloud Engineer", "Database Administrator", "QA Engineer"],
+      "Commerce": ["Accountant", "Financial Analyst", "Business Analyst", "Sales Executive", "Tax Consultant", "Auditor", "Investment Banker", "Retail Manager", "E-commerce Manager"],
+      "Business Administration": ["Business Manager", "HR Executive", "Marketing Manager", "Operations Analyst", "Project Manager", "Supply Chain Manager", "Entrepreneur", "Event Manager", "Digital Business Analyst"],
+      "Arts": ["Blue Pottery Artist", "Sculptor", "Painter", "Textile Designer", "Fashion Designer", "Concept Artist", "Illustrator", "Graphic Designer", "Photographer", "Content Writer", "Journalist", "Animator"],
+      "Engineering": ["Software Engineer", "Civil Engineer", "Mechanical Engineer", "Electrical Engineer", "Robotics Engineer", "Production Engineer", "Architect", "Automotive Engineer", "Chemical Engineer"],
+      "Law": ["Advocate", "Legal Advisor", "Corporate Lawyer", "Legal Consultant", "Judge", "Public Prosecutor", "Notary", "Compliance Officer", "Legal Analyst"],
+      "Education": ["Teacher", "Academic Coordinator", "Education Consultant", "School Administrator", "Curriculum Designer", "Counselor", "Librarian", "Special Educator"],
+      "Science": ["Research Assistant", "Scientist", "Lab Analyst", "Biotech Analyst", "Pharmacist", "Environmental Scientist", "Nutritionist", "Forensic Analyst"],
+      "Mathematics": ["Data Analyst", "Statistician", "Research Analyst", "Actuarial Analyst", "Mathematician", "Operations Research Analyst", "Quant Analyst", "Financial Risk Analyst"],
+      "Psychology": ["Counselor", "HR Executive", "Social Worker", "Behavioral Analyst", "Clinical Psychologist", "Career Counselor", "Child Psychologist", "Industrial Psychologist"],
+      "Hospitality Management": ["Hotel Manager", "Travel Consultant", "Event Manager", "Front Office Manager", "Restaurant Manager", "Cruise Manager", "Catering Manager", "Guest Relations Officer"],
+      "Agriculture": ["Agricultural Officer", "Farm Manager", "Agri Business Executive", "Research Associate", "Horticulturist", "Soil Scientist", "Food Technologist", "Dairy Manager"]
+    };
+
+    var subjectSkills = {
+      "Computer Science": ["Programming", "Data Structures", "Python", "SQL", "Problem Solving"],
+      "Commerce": ["Accounting", "Finance", "Excel", "Business Communication", "Marketing"],
+      "Business Administration": ["Leadership", "Strategy", "Operations", "Communication", "Management"],
+      "Arts": ["Writing", "Research", "Communication", "Creativity", "Public Speaking", "Sketching", "Color Theory", "Clay Modeling", "Visual Art", "Design Thinking"],
+      "Engineering": ["CAD", "MATLAB", "Innovation", "Technical Design", "Project Management"],
+      "Law": ["Legal Research", "Drafting", "Negotiation", "Ethics", "Critical Thinking"],
+      "Education": ["Teaching", "Lesson Planning", "Communication", "Classroom Management", "Counseling"],
+      "Science": ["Research", "Analysis", "Laboratory Skills", "Observation", "Data Analysis"],
+      "Mathematics": ["Statistics", "Problem Solving", "Logic", "Analytical Thinking", "Calculations"],
+      "Psychology": ["Empathy", "Research", "Behavior Analysis", "Communication", "Observation"],
+      "Hospitality Management": ["Customer Service", "Hospitality", "Communication", "Planning", "Teamwork"],
+      "Agriculture": ["Agronomy", "Fieldwork", "Research", "Sustainability", "Problem Solving"]
+    };
+
+    var careerSkills = {
+      "Web Developer": ["HTML", "CSS", "JavaScript", "Bootstrap", "React"],
+      "Data Analyst": ["Excel", "SQL", "Python", "Power BI", "Tableau"],
+      "Software Engineer": ["Java", "Python", "DSA", "Git", "Problem Solving"],
+      "Cybersecurity Analyst": ["Networking", "Linux", "Security Tools", "Python", "Ethical Hacking"],
+      "AI Engineer": ["Machine Learning", "Python", "AI Models", "Data Science", "Neural Networks"],
+      "Game Developer": ["Unity", "C#", "Game Design", "Graphics", "Animation"],
+      "Cloud Engineer": ["AWS", "Azure", "Docker", "Kubernetes", "Linux"],
+      "Database Administrator": ["SQL", "Database Design", "Optimization", "Backup", "Security"],
+      "QA Engineer": ["Testing", "Automation", "Bug Tracking", "Documentation", "Quality Assurance"],
+      "Accountant": ["Tally", "Taxation", "Finance", "Accounting", "Excel"],
+      "Financial Analyst": ["Finance", "Excel", "Forecasting", "Risk Analysis", "Business Strategy"],
+      "Business Analyst": ["Business Process", "Excel", "SQL", "Reporting", "Problem Solving"],
+      "Sales Executive": ["Communication", "Negotiation", "CRM", "Lead Generation", "Sales Strategy"],
+      "Tax Consultant": ["Taxation", "Compliance", "Finance", "Planning", "Documentation"],
+      "Auditor": ["Accounting", "Auditing", "Risk Control", "Finance", "Compliance"],
+      "Investment Banker": ["Finance", "Valuation", "Market Analysis", "Risk", "Strategy"],
+      "Retail Manager": ["Retail Operations", "Customer Service", "Sales", "Inventory", "Leadership"],
+      "E-commerce Manager": ["Digital Marketing", "Sales Funnel", "Analytics", "Operations", "Strategy"],
+      "Business Manager": ["Leadership", "Operations", "Planning", "Strategy", "Communication"],
+      "HR Executive": ["Recruitment", "HRMS", "Communication", "Employee Relations", "Training"],
+      "Marketing Manager": ["Marketing", "Branding", "Campaign Planning", "Analytics", "Communication"],
+      "Operations Analyst": ["Operations", "Process Mapping", "Excel", "Efficiency", "Reporting"],
+      "Project Manager": ["Planning", "Leadership", "Scheduling", "Risk Management", "Communication"],
+      "Supply Chain Manager": ["Logistics", "Procurement", "Operations", "Planning", "Efficiency"],
+      "Entrepreneur": ["Business Planning", "Innovation", "Strategy", "Leadership", "Risk Management"],
+      "Event Manager": ["Event Planning", "Coordination", "Communication", "Leadership", "Time Management"],
+      "Digital Business Analyst": ["Business Analysis", "Digital Strategy", "Reporting", "CRM", "Excel"],
+      "Content Writer": ["Writing", "Research", "Editing", "SEO", "Content Strategy"],
+      "Journalist": ["Research", "Reporting", "Writing", "Interviews", "Communication"],
+      "Blue Pottery Artist": ["Clay Work", "Handcrafting", "Color Mixing", "Traditional Art", "Design"],
+      "Sculptor": ["Sculpting", "Clay Modeling", "Form Study", "Texture Design", "Creative Thinking"],
+      "Painter": ["Sketching", "Color Theory", "Composition", "Brush Techniques", "Visual Art"],
+      "Textile Designer": ["Fabric Design", "Pattern Making", "Color Theory", "Visual Perception", "Creativity"],
+      "Fashion Designer": ["Fashion Sketching", "Trend Analysis", "Textiles", "Design", "Creativity"],
+      "Concept Artist": ["Storyboarding", "Character Design", "Digital Illustration", "Visual Storytelling", "Creativity"],
+      "Illustrator": ["Sketching", "Digital Art", "Color Theory", "Composition", "Visual Communication"],
+      "Graphic Designer": ["Adobe Photoshop", "Typography", "Layout Design", "Branding", "Creativity"],
+      "Photographer": ["Composition", "Camera Skills", "Lighting", "Editing", "Visual Storytelling"],
+      "Animator": ["Animation", "Storyboarding", "Motion Design", "Creative Editing", "Visual Design"],
+      "Teacher": ["Teaching", "Communication", "Lesson Planning", "Classroom Management", "Mentoring"],
+      "Civil Engineer": ["AutoCAD", "Construction", "Project Planning", "Surveying", "Design"],
+      "Mechanical Engineer": ["Design", "Thermodynamics", "Manufacturing", "CAD", "Problem Solving"],
+      "Electrical Engineer": ["Circuit Design", "PLC", "Power Systems", "Troubleshooting", "Automation"],
+      "Robotics Engineer": ["Automation", "Sensors", "Embedded Systems", "Programming", "Control Systems"],
+      "Production Engineer": ["Process Planning", "Quality Control", "Manufacturing", "Optimization", "Safety"],
+      "Architect": ["Design", "Planning", "Visualization", "Construction", "Innovation"],
+      "Automotive Engineer": ["Vehicle Design", "Mechanics", "Testing", "CAD", "Problem Solving"],
+      "Chemical Engineer": ["Process Design", "Laboratory Skills", "Safety", "Innovation", "Analysis"],
+      "Advocate": ["Legal Research", "Drafting", "Negotiation", "Public Speaking", "Case Analysis"],
+      "Legal Advisor": ["Contract Law", "Compliance", "Research", "Communication", "Documentation"],
+      "Corporate Lawyer": ["Corporate Law", "Contract Drafting", "Legal Research", "Compliance", "Negotiation"],
+      "Legal Consultant": ["Legal Research", "Documentation", "Compliance", "Client Handling", "Analysis"],
+      "Judge": ["Legal Interpretation", "Ethics", "Argumentation", "Law", "Decision Making"],
+      "Public Prosecutor": ["Case Preparation", "Law", "Research", "Argumentation", "Evidence"],
+      "Notary": ["Documentation", "Verification", "Legal Process", "Attention to Detail", "Compliance"],
+      "Compliance Officer": ["Regulations", "Auditing", "Risk Management", "Compliance", "Documentation"],
+      "Legal Analyst": ["Legal Research", "Data Analysis", "Policy Review", "Documentation", "Communication"],
+      "Academic Coordinator": ["Mentoring", "Administration", "Scheduling", "Communication", "Planning"],
+      "Education Consultant": ["Counseling", "Planning", "Communication", "Curriculum", "Assessment"],
+      "School Administrator": ["Administration", "Leadership", "Planning", "Communication", "Problem Solving"],
+      "Curriculum Designer": ["Planning", "Assessment", "Instruction", "Communication", "Teaching"],
+      "Counselor": ["Counseling", "Empathy", "Listening", "Problem Solving", "Communication"],
+      "Librarian": ["Research", "Cataloging", "Information Management", "Communication", "Organization"],
+      "Special Educator": ["Teaching", "Assessment", "Patience", "Communication", "Planning"],
+      "Research Assistant": ["Research", "Data Analysis", "Documentation", "Experimentation", "Observation"],
+      "Scientist": ["Research", "Analysis", "Lab Skills", "Experimentation", "Innovation"],
+      "Lab Analyst": ["Testing", "Lab Skills", "Documentation", "Analysis", "Safety"],
+      "Biotech Analyst": ["Biotech", "Research", "Data Analysis", "Laboratory Skills", "Innovation"],
+      "Pharmacist": ["Medication Knowledge", "Research", "Safety", "Communication", "Healthcare"],
+      "Environmental Scientist": ["Research", "Sustainability", "Analysis", "Fieldwork", "Reporting"],
+      "Nutritionist": ["Health Assessment", "Diet Planning", "Communication", "Research", "Analysis"],
+      "Forensic Analyst": ["Evidence Analysis", "Research", "Documentation", "Observation", "Critical Thinking"],
+      "Statistician": ["Statistics", "Data Analysis", "Excel", "Probability", "Research"],
+      "Research Analyst": ["Research", "Statistics", "Data Analysis", "Reporting", "Insight Generation"],
+      "Actuarial Analyst": ["Probability", "Modeling", "Risk", "Statistics", "Excel"],
+      "Mathematician": ["Logic", "Statistics", "Problem Solving", "Analysis", "Modeling"],
+      "Operations Research Analyst": ["Optimization", "Data Analysis", "Modeling", "Logic", "Decision Making"],
+      "Quant Analyst": ["Statistics", "Modeling", "Risk", "Programming", "Finance"],
+      "Financial Risk Analyst": ["Risk Analysis", "Finance", "Modeling", "Reporting", "Statistics"],
+      "Clinical Psychologist": ["Assessment", "Empathy", "Research", "Listening", "Behavior Analysis"],
+      "Career Counselor": ["Counseling", "Communication", "Planning", "Assessment", "Motivation"],
+      "Child Psychologist": ["Observation", "Empathy", "Research", "Communication", "Patience"],
+      "Industrial Psychologist": ["Assessment", "HR", "Communication", "Research", "Behavior Analysis"],
+      "Hotel Manager": ["Customer Service", "Operations", "Hospitality", "Teamwork", "Planning"],
+      "Travel Consultant": ["Tour Planning", "Communication", "Customer Service", "Problem Solving", "Sales"],
+      "Event Manager": ["Event Planning", "Coordination", "Communication", "Leadership", "Time Management"],
+      "Front Office Manager": ["Customer Service", "Hospitality", "Operations", "Leadership", "Communication"],
+      "Restaurant Manager": ["Hospitality", "Customer Service", "Leadership", "Operations", "Teamwork"],
+      "Cruise Manager": ["Hospitality", "Operations", "Customer Service", "Communication", "Leadership"],
+      "Catering Manager": ["Planning", "Service", "Communication", "Operations", "Leadership"],
+      "Guest Relations Officer": ["Customer Service", "Communication", "Hospitality", "Problem Solving", "Leadership"],
+      "Agricultural Officer": ["Agronomy", "Fieldwork", "Research", "Planning", "Sustainability"],
+      "Farm Manager": ["Crop Management", "Operations", "Leadership", "Planning", "Problem Solving"],
+      "Agri Business Executive": ["Agriculture", "Marketing", "Supply Chain", "Communication", "Strategy"],
+      "Research Associate": ["Field Research", "Agriculture", "Data Analysis", "Documentation", "Innovation"],
+      "Horticulturist": ["Plant Science", "Research", "Planning", "Sustainability", "Observation"],
+      "Soil Scientist": ["Research", "Analysis", "Fieldwork", "Sustainability", "Documentation"],
+      "Food Technologist": ["Food Safety", "Quality Control", "Research", "Analysis", "Innovation"],
+      "Dairy Manager": ["Operations", "Quality Control", "Planning", "Leadership", "Animal Care"]
+    };
+
+    function updateCareerOptions() {
+      var subject = document.getElementById("subject").value;
+      var careerSelect = document.getElementById("career");
+      var options = subjectCareerMap[subject] || ["Web Developer", "Data Analyst", "Software Engineer"];
+
+      careerSelect.innerHTML = '<option value="" disabled selected>Select Career</option>' + options.map(function(item) {
+        return '<option value="' + item + '">' + item + '</option>';
+      }).join("");
+    }
+
+    function suggestSkills() {
+      var subject = document.getElementById("subject").value;
+      var career = document.getElementById("career").value;
+      var selectedSkills = [];
+
+      if (subject && subjectSkills[subject]) {
+        selectedSkills = selectedSkills.concat(subjectSkills[subject]);
+      }
+      if (career && careerSkills[career]) {
+        selectedSkills = selectedSkills.concat(careerSkills[career]);
+      }
+
+      selectedSkills = selectedSkills.filter(function(item, index, arr) {
+        return arr.indexOf(item) === index;
+      });
+
+      if (selectedSkills.length === 0) {
+        selectedSkills = ["Communication", "Research", "Problem Solving"];
+      }
+
+      var html = '<h3>AI Recommended Skills</h3>' + selectedSkills.map(function(item) {
+        return '<button type="button" class="skill-box" aria-pressed="false" onclick="toggleSkill(this)">' + escapeHTML(item) + '</button>';
+      }).join("");
+
+      if (subject) {
+        html += '<p><b>Subject:</b> ' + escapeHTML(subject) + '</p>';
+      }
+      if (career) {
+        html += '<p><b>Career:</b> ' + escapeHTML(career) + '</p>';
+      }
+
+      document.getElementById("skillsArea").innerHTML = html;
+      addEntranceAnimation("#skillsArea .skill-box");
+    }
+
+    function generateSummary() {
+      var subject = trimValue(document.getElementById("subject").value);
+      var career = trimValue(document.getElementById("career").value);
+      var subjectSummaries = {
+        "Computer Science": "Computer Science student with strong analytical thinking, coding skills, and interest in software development and problem solving.",
+        "Commerce": "Commerce student with knowledge of business operations, financial concepts, and practical decision-making skills.",
+        "Business Administration": "Business Administration student with leadership qualities, strategic thinking, and interest in management and organizational growth.",
+        "Arts": "Arts student with creativity, communication skills, and interest in storytelling, research, and self-expression.",
+        "Engineering": "Engineering student focused on technical problem solving, innovation, and practical application of scientific concepts.",
+        "Law": "Law student with strong legal reasoning, research, communication, and justice-oriented problem solving.",
+        "Education": "Education student committed to teaching, mentoring, and creating positive learning outcomes for students.",
+        "Science": "Science student with curiosity, analytical skills, and a passion for research and experimentation.",
+        "Mathematics": "Mathematics student with strong logical reasoning, precision, and analytical problem-solving ability.",
+        "Psychology": "Psychology student with empathy, observation skills, and interest in behavior, learning, and human development.",
+        "Hospitality Management": "Hospitality Management student with service mindset, communication ability, and interest in customer experience.",
+        "Agriculture": "Agriculture student with practical understanding of farming, sustainability, and field-based problem solving."
+      };
+
+      var careerSummaries = {
+        "Web Developer": "Motivated Web Developer with knowledge of HTML, CSS, and JavaScript. Passionate about creating responsive and user-friendly websites.",
+        "Data Analyst": "Enthusiastic Data Analyst with strong interest in data interpretation, visualization, and business insights.",
+        "Software Engineer": "Dedicated Software Engineer with strong problem-solving skills and passion for developing efficient software solutions.",
+        "Cybersecurity Analyst": "Focused Cybersecurity Analyst with interest in threat detection, system protection, and secure digital systems.",
+        "AI Engineer": "AI Engineer with interest in machine learning, intelligent systems, and building data-driven automation solutions.",
+        "Game Developer": "Creative Game Developer with a strong interest in gameplay design, coding, and interactive digital experiences.",
+        "Cloud Engineer": "Cloud Engineer focused on scalable infrastructure, deployment automation, and reliable digital systems.",
+        "Database Administrator": "Database Administrator with strong understanding of system performance, data security, and database optimization.",
+        "QA Engineer": "QA Engineer with strong attention to detail, testing expertise, and commitment to product quality.",
+        "Accountant": "Detail-oriented Accountant with interest in financial accuracy, budgeting, and strong record-keeping skills.",
+        "Financial Analyst": "Analytical Financial Analyst with interest in planning, forecasting, and strategic business decisions.",
+        "Business Analyst": "Business Analyst with an eye for process improvement, data-driven decisions, and business growth.",
+        "Sales Executive": "Result-oriented Sales Executive with strong communication skills and interest in customer relationship building.",
+        "Tax Consultant": "Tax Consultant with knowledge of tax planning, compliance, and financial decision support.",
+        "Auditor": "Auditor with strong analytical thinking, compliance awareness, and interest in financial integrity.",
+        "Investment Banker": "Investment Banker with analytical thinking, market understanding, and interest in strategic financial growth.",
+        "Retail Manager": "Retail Manager with customer-focused mindset and strong ability to manage sales and operations.",
+        "E-commerce Manager": "E-commerce Manager focused on digital growth, online sales, and customer acquisition strategies.",
+        "Business Manager": "Leadership-focused Business Manager with strong decision-making skills and interest in business operations.",
+        "HR Executive": "HR Executive with interest in recruiting, employee engagement, and organizational development.",
+        "Marketing Manager": "Creative Marketing Manager with strong brand awareness and market strategy skills.",
+        "Operations Analyst": "Operations Analyst focused on improving efficiency, reducing costs, and supporting business performance.",
+        "Project Manager": "Project Manager with strong planning, coordination, and execution skills for successful delivery.",
+        "Supply Chain Manager": "Supply Chain Manager focused on logistics, process efficiency, and smooth business operations.",
+        "Entrepreneur": "Entrepreneur with strong problem-solving mindset, business strategy interest, and leadership potential.",
+        "Event Manager": "Event Manager with strong organization skills and interest in planning memorable experiences.",
+        "Digital Business Analyst": "Digital Business Analyst with interest in digital strategy, process improvement, and business optimization.",
+        "Content Writer": "Creative Content Writer with strong writing skills and interest in storytelling, research, and digital communication.",
+        "Journalist": "Insightful Journalist with interest in reporting, writing, and exploring current issues with clarity.",
+        "Blue Pottery Artist": "Creative Blue Pottery Artist with strong craftsmanship, color sense, and traditional design thinking.",
+        "Sculptor": "Skilled Sculptor with interest in form, texture, and expressive three-dimensional art.",
+        "Painter": "Visual Painter with a strong eye for color, composition, and storytelling through art.",
+        "Textile Designer": "Textile Designer with creativity, pattern development skills, and interest in fabric innovation.",
+        "Fashion Designer": "Fashion Designer with strong design sensibility, trend awareness, and creativity in apparel styling.",
+        "Concept Artist": "Concept Artist with strong visual imagination, storytelling ability, and design-focused thinking.",
+        "Illustrator": "Illustrator with artistic detail, visual communication skills, and creative problem-solving ability.",
+        "Graphic Designer": "Graphic Designer with creativity, branding insight, and a strong understanding of visual communication.",
+        "Photographer": "Photographer with strong visual storytelling, composition skills, and attention to light and detail.",
+        "Animator": "Animator with creative storytelling ability and interest in motion, visual design, and digital expression.",
+        "Teacher": "Dedicated Teacher with strong communication skills and passion for mentoring students to success.",
+        "Civil Engineer": "Practical Civil Engineer with interest in infrastructure, planning, and sustainable design.",
+        "Mechanical Engineer": "Mechanical Engineer with problem-solving mindset and interest in design, manufacturing, and innovation.",
+        "Electrical Engineer": "Electrical Engineer with strong technical understanding of systems, circuits, and practical implementation.",
+        "Robotics Engineer": "Robotics Engineer with interest in automation, machine intelligence, and smart technical systems.",
+        "Production Engineer": "Production Engineer focused on efficient manufacturing processes, quality control, and operational improvement.",
+        "Architect": "Architect with design-focused thinking, planning ability, and interest in functional and aesthetic spaces.",
+        "Automotive Engineer": "Automotive Engineer with interest in vehicle systems, design, and technical innovation.",
+        "Chemical Engineer": "Chemical Engineer with analytical thinking and interest in industrial processes and scientific problem solving.",
+        "Advocate": "Driven Advocate with keen legal understanding, communication skills, and interest in justice and advocacy.",
+        "Legal Advisor": "Legal Advisor with analytical thinking and interest in compliance, documentation, and client guidance.",
+        "Corporate Lawyer": "Corporate Lawyer with interest in contracts, legal compliance, and strategic business law.",
+        "Legal Consultant": "Legal Consultant with solid research skills and interest in regulatory and legal solutions.",
+        "Judge": "Judge with strong legal reasoning, ethics, and commitment to fair decision-making.",
+        "Public Prosecutor": "Public Prosecutor focused on legal clarity, case preparation, and justice-driven advocacy.",
+        "Notary": "Notary with attention to legal detail, document verification, and compliance-focused service.",
+        "Compliance Officer": "Compliance Officer with strong regulatory awareness and commitment to ethical business practices.",
+        "Legal Analyst": "Legal Analyst with interest in legal research, policy review, and informed decision support.",
+        "Academic Coordinator": "Academic Coordinator with administrative focus and interest in improving learning environments.",
+        "Education Consultant": "Education Consultant with interest in academic planning and student development.",
+        "School Administrator": "School Administrator with leadership skills and focus on smooth operations and student support.",
+        "Curriculum Designer": "Curriculum Designer with strong planning ability and focus on relevant, effective learning experiences.",
+        "Counselor": "Counselor with empathy, communication ability, and dedication to guiding individuals toward solutions.",
+        "Librarian": "Librarian with strong information management skills, research support, and organizational ability.",
+        "Special Educator": "Special Educator with patience, communication, and commitment to inclusive learning.",
+        "Research Assistant": "Research Assistant with strong attention to detail and interest in experiments, data, and analysis.",
+        "Scientist": "Scientist with curiosity, analytical thinking, and passion for scientific discovery.",
+        "Lab Analyst": "Lab Analyst with interest in accurate testing, observation, and scientific reporting.",
+        "Biotech Analyst": "Biotech Analyst focused on research, biological data, and innovation-driven scientific solutions.",
+        "Pharmacist": "Pharmacist with healthcare awareness, safety focus, and strong communication with patients and teams.",
+        "Environmental Scientist": "Environmental Scientist dedicated to research, sustainability, and responsible resource planning.",
+        "Nutritionist": "Nutritionist focused on health guidance, diet planning, and evidence-based wellness support.",
+        "Forensic Analyst": "Forensic Analyst with detail-oriented thinking and interest in evidence-based investigation.",
+        "Statistician": "Statistician with strong analytical thinking, data interpretation ability, and passion for evidence-based decisions.",
+        "Research Analyst": "Research Analyst with interest in structured analysis, insights, and decision support using data.",
+        "Actuarial Analyst": "Actuarial Analyst with strong risk analysis skills and interest in quantitative financial decisions.",
+        "Mathematician": "Mathematician with logical reasoning, modeling mindset, and strong interest in quantitative thinking.",
+        "Operations Research Analyst": "Operations Research Analyst with focus on optimization, modeling, and efficient decision systems.",
+        "Quant Analyst": "Quant Analyst with interest in financial modeling, risk analysis, and statistical problem solving.",
+        "Financial Risk Analyst": "Financial Risk Analyst with a strong understanding of risk evaluation, financial decisions, and analysis.",
+        "Clinical Psychologist": "Clinical Psychologist with empathy, observation, and commitment to understanding human behavior.",
+        "Career Counselor": "Career Counselor focused on guidance, planning, and helping individuals make informed choices.",
+        "Child Psychologist": "Child Psychologist with patience, empathy, and focus on developmental understanding.",
+        "Industrial Psychologist": "Industrial Psychologist with interest in workplace behavior, assessment, and organizational improvement.",
+        "Hotel Manager": "Hotel Manager with service mindset and interest in smooth guest experiences and operations.",
+        "Travel Consultant": "Travel Consultant with communication strength and focus on planning customer-friendly travel experiences.",
+        "Event Manager": "Event Manager with strong coordination skills and interest in creating smooth, memorable events.",
+        "Front Office Manager": "Front Office Manager focused on service quality, guest relations, and operational efficiency.",
+        "Restaurant Manager": "Restaurant Manager with hospitality focus and leadership in service and operations.",
+        "Cruise Manager": "Cruise Manager with service-focused leadership and attention to guest experience.",
+        "Catering Manager": "Catering Manager with interest in planning, service operations, and memorable guest experiences.",
+        "Guest Relations Officer": "Guest Relations Officer with strong communication skills and focus on customer satisfaction.",
+        "Agricultural Officer": "Agricultural Officer with practical understanding of farming, sustainability, and field-based problem solving.",
+        "Farm Manager": "Farm Manager with leadership, planning, and field operations knowledge for effective productivity.",
+        "Agri Business Executive": "Agri Business Executive focused on agriculture marketing, business strategy, and growth.",
+        "Research Associate": "Research Associate with strong observation ability and interest in agricultural studies and innovation.",
+        "Horticulturist": "Horticulturist with focus on plant care, sustainable cultivation, and ecological planning.",
+        "Soil Scientist": "Soil Scientist interested in land analysis, sustainability, and scientific decision-making.",
+        "Food Technologist": "Food Technologist with interest in product quality, food safety, and innovation.",
+        "Dairy Manager": "Dairy Manager with operational focus on quality control, production, and animal care.",
+        "Social Worker": "Social Worker with empathy, service mindset, and commitment to community support.",
+        "Behavioral Analyst": "Behavioral Analyst focused on observation, assessment, and practical understanding of behavior patterns."
+      };
+
+      var text = "Select a subject and career to generate a summary.";
+      if (subject && subjectSummaries[subject]) {
+        text = subjectSummaries[subject];
+      }
+      if (career && careerSummaries[career]) {
+        text = careerSummaries[career];
+      }
+      if (subject && career) {
+        text = careerSummaries[career] || subjectSummaries[subject] || text;
+      }
+
+      document.getElementById("summary").textContent = text;
+    }
+
+    function generateSummary() {
+      var subject = trimValue(document.getElementById("subject").value);
+      var career = trimValue(document.getElementById("career").value);
+
+      var subjectSummaries = {
+        "Computer Science": "Computer Science student with strong analytical thinking, coding skills, and a strong interest in software development and problem solving.",
+        "Commerce": "Commerce student with knowledge of business operations, accounting fundamentals, and practical financial decision-making.",
+        "Business Administration": "Business Administration student with leadership qualities, strategic thinking, and interest in management and organizational growth.",
+        "Arts": "Arts student with creativity, communication skills, and a deep passion for storytelling, research, and self-expression.",
+        "Engineering": "Engineering student focused on technical problem solving, innovation, and the practical application of scientific knowledge.",
+        "Law": "Law student with legal reasoning, research ability, strong communication, and a justice-driven mindset.",
+        "Education": "Education student committed to teaching, mentoring, and creating positive learning outcomes for students.",
+        "Science": "Science student with curiosity, analytical ability, and a strong interest in research, experiments, and evidence-based learning.",
+        "Mathematics": "Mathematics student with logical reasoning, precision, and analytical problem-solving ability.",
+        "Psychology": "Psychology student with empathy, observation skills, and interest in behavior, learning, and human development.",
+        "Hospitality Management": "Hospitality Management student with a service-driven mindset, communication strength, and customer experience focus.",
+        "Agriculture": "Agriculture student with practical understanding of farming, sustainability, and field-based problem solving."
+      };
+
+      var careerSummaries = {
+        "Web Developer": "As a Web Developer, I enjoy creating efficient and user-friendly digital experiences with HTML, CSS, JavaScript, and modern design thinking.",
+        "Data Analyst": "As a Data Analyst, I focus on understanding patterns, interpreting information, and turning raw data into useful business insight.",
+        "Software Engineer": "As a Software Engineer, I use structured thinking and coding skills to build reliable, scalable, and efficient digital solutions.",
+        "Cybersecurity Analyst": "As a Cybersecurity Analyst, I am interested in protecting systems, identifying risks, and keeping technology safe and secure.",
+        "AI Engineer": "As an AI Engineer, I enjoy machine learning, smart automation, and building intelligent systems that solve real-world problems.",
+        "Game Developer": "As a Game Developer, I enjoy designing interactive experiences, building gameplay logic, and creating engaging digital worlds.",
+        "Cloud Engineer": "As a Cloud Engineer, I focus on scalable infrastructure, secure deployment, and dependable systems for modern businesses.",
+        "Database Administrator": "As a Database Administrator, I improve data accuracy, performance, and secure access to important business information.",
+        "QA Engineer": "As a QA Engineer, I value quality, precision, and careful validation to ensure strong product performance.",
+        "Accountant": "As an Accountant, I am detail-oriented, focused on financial accuracy, and committed to well-managed records and budgets.",
+        "Financial Analyst": "As a Financial Analyst, I enjoy planning, forecasting, and using data to support better financial decisions.",
+        "Business Analyst": "As a Business Analyst, I focus on process improvement, practical problem solving, and smarter business growth strategies.",
+        "Sales Executive": "As a Sales Executive, I bring strong communication, customer relationships, and result-driven selling skills.",
+        "Tax Consultant": "As a Tax Consultant, I help individuals and organizations manage compliance, planning, and financial responsibilities efficiently.",
+        "Auditor": "As an Auditor, I focus on accuracy, compliance, and reviewing financial processes with strong analytical attention.",
+        "Investment Banker": "As an Investment Banker, I am interested in strategic finance, value creation, and helping organizations make wise capital decisions.",
+        "Retail Manager": "As a Retail Manager, I focus on customer service, sales growth, and smooth daily operations.",
+        "E-commerce Manager": "As an E-commerce Manager, I work on digital growth, online customer experience, and stronger sales performance.",
+        "Business Manager": "As a Business Manager, I combine leadership, planning, and decision-making to support efficient operations and growth.",
+        "HR Executive": "As an HR Executive, I value recruitment, engagement, and creating a positive workplace culture.",
+        "Marketing Manager": "As a Marketing Manager, I enjoy understanding audiences, managing campaigns, and shaping strong brand presence.",
+        "Operations Analyst": "As an Operations Analyst, I improve workflows, reduce inefficiencies, and support better business performance.",
+        "Project Manager": "As a Project Manager, I coordinate planning, execution, and team collaboration to achieve successful results.",
+        "Supply Chain Manager": "As a Supply Chain Manager, I focus on logistics, process efficiency, and smooth business operations.",
+        "Entrepreneur": "As an Entrepreneur, I enjoy solving problems, spotting opportunities, and building ideas into practical businesses.",
+        "Event Manager": "As an Event Manager, I organize experiences, coordinate teams, and create memorable events with attention to detail.",
+        "Digital Business Analyst": "As a Digital Business Analyst, I combine business understanding with digital strategy to improve performance and growth.",
+        "Content Writer": "As a Content Writer, I write with clarity, creativity, and purpose to engage audiences and communicate value.",
+        "Journalist": "As a Journalist, I investigate stories, present facts clearly, and share useful information with accuracy.",
+        "Blue Pottery Artist": "As a Blue Pottery Artist, I express creativity through clay work, traditional craft, and meaningful artistic design.",
+        "Sculptor": "As a Sculptor, I explore form, texture, and expression through three-dimensional art and creative craftsmanship.",
+        "Painter": "As a Painter, I use color, composition, and visual storytelling to express ideas and emotion through art.",
+        "Textile Designer": "As a Textile Designer, I create patterns, textures, and fabrics that balance creativity with practical design.",
+        "Fashion Designer": "As a Fashion Designer, I focus on style, trends, and creating clothing that is both expressive and functional.",
+        "Concept Artist": "As a Concept Artist, I turn ideas into visual stories, character designs, and creative concept work.",
+        "Illustrator": "As an Illustrator, I combine artistic skill and storytelling to communicate ideas through visual design.",
+        "Graphic Designer": "As a Graphic Designer, I create visually engaging content that communicates messages clearly and professionally.",
+        "Photographer": "As a Photographer, I use composition, light, and visual storytelling to create memorable images.",
+        "Animator": "As an Animator, I bring ideas to life through movement, design, and story-driven visual animation.",
+        "Teacher": "As a Teacher, I enjoy guiding students, creating engaging learning experiences, and supporting growth.",
+        "Civil Engineer": "As a Civil Engineer, I work on practical design, infrastructure planning, and sustainable construction solutions.",
+        "Mechanical Engineer": "As a Mechanical Engineer, I focus on design, manufacturing, and solving technical problems using engineering principles.",
+        "Electrical Engineer": "As an Electrical Engineer, I work with circuits, power systems, and technology that supports modern infrastructure.",
+        "Robotics Engineer": "As a Robotics Engineer, I am interested in automation, machine intelligence, and building smart technical systems.",
+        "Production Engineer": "As a Production Engineer, I improve manufacturing systems, quality control, and overall operational efficiency.",
+        "Architect": "As an Architect, I combine creativity and planning to design spaces that are functional, inspiring, and practical.",
+        "Automotive Engineer": "As an Automotive Engineer, I focus on vehicle systems, technical performance, and innovation in transportation design.",
+        "Chemical Engineer": "As a Chemical Engineer, I work on process design, industrial systems, and scientific problem solving across production environments.",
+        "Advocate": "As an Advocate, I use legal reasoning, communication, and integrity to support justice and fair representation.",
+        "Legal Advisor": "As a Legal Advisor, I help clients understand rules, obligations, and informed legal decisions with confidence.",
+        "Corporate Lawyer": "As a Corporate Lawyer, I focus on contract law, compliance, and helping businesses manage legal risk effectively.",
+        "Legal Consultant": "As a Legal Consultant, I analyze legal issues, identify solutions, and guide decisions with research-driven insight.",
+        "Judge": "As a Judge, I value fairness, legal reasoning, and responsible decision-making in service of justice.",
+        "Public Prosecutor": "As a Public Prosecutor, I focus on case preparation, legal clarity, and protecting public interest through justice.",
+        "Notary": "As a Notary, I handle documentation and verification with precision, trust, and attention to legal procedure.",
+        "Compliance Officer": "As a Compliance Officer, I support policies, ethical practice, and effective risk monitoring in business environments.",
+        "Legal Analyst": "As a Legal Analyst, I review policies, research cases, and support informed decisions with strong legal analysis.",
+        "Academic Coordinator": "As an Academic Coordinator, I support learning environments, planning, and positive educational outcomes.",
+        "Education Consultant": "As an Education Consultant, I help improve academic plans, student engagement, and learning strategies.",
+        "School Administrator": "As a School Administrator, I focus on leadership, organization, and creating a supportive academic environment.",
+        "Curriculum Designer": "As a Curriculum Designer, I create structured learning experiences that are clear, relevant, and effective.",
+        "Counselor": "As a Counselor, I help people identify challenges, build confidence, and move toward practical solutions.",
+        "Librarian": "As a Librarian, I support research, information access, and organized learning through knowledge management.",
+        "Special Educator": "As a Special Educator, I adapt teaching methods to support inclusive learning and meaningful student growth.",
+        "Research Assistant": "As a Research Assistant, I support experiments, analysis, and evidence-based learning through careful observation.",
+        "Scientist": "As a Scientist, I explore ideas, investigate questions, and use evidence to understand the natural world.",
+        "Lab Analyst": "As a Lab Analyst, I focus on accurate testing, observation, and clear scientific reporting.",
+        "Biotech Analyst": "As a Biotech Analyst, I work with biological data and research to support scientific innovation and healthcare progress.",
+        "Pharmacist": "As a Pharmacist, I focus on patient safety, medication knowledge, and clear communication in health settings.",
+        "Environmental Scientist": "As an Environmental Scientist, I study sustainability, ecosystems, and responsible resource management.",
+        "Nutritionist": "As a Nutritionist, I guide healthy choices through diet planning, wellness support, and evidence-based care.",
+        "Forensic Analyst": "As a Forensic Analyst, I use careful observation and evidence review to support accurate investigation and analysis.",
+        "Statistician": "As a Statistician, I turn data into meaningful evidence and use numbers to inform sound decisions.",
+        "Research Analyst": "As a Research Analyst, I collect information, analyze patterns, and turn findings into actionable insight.",
+        "Actuarial Analyst": "As an Actuarial Analyst, I evaluate risk and support financial decisions through quantitative analysis.",
+        "Mathematician": "As a Mathematician, I enjoy structured reasoning, modeling problems, and discovering solutions through logic.",
+        "Operations Research Analyst": "As an Operations Research Analyst, I apply analytical methods to optimize systems and improve efficiency.",
+        "Quant Analyst": "As a Quant Analyst, I combine statistics, modeling, and market insight to support financial decision-making.",
+        "Financial Risk Analyst": "As a Financial Risk Analyst, I assess uncertainty, model risk, and support informed financial strategies.",
+        "Clinical Psychologist": "As a Clinical Psychologist, I support emotional well-being through observation, assessment, and thoughtful guidance.",
+        "Career Counselor": "As a Career Counselor, I guide individuals toward suitable opportunities by matching strengths, interests, and goals.",
+        "Child Psychologist": "As a Child Psychologist, I focus on development, behavior, and emotional support for children and families.",
+        "Industrial Psychologist": "As an Industrial Psychologist, I study workplace behavior and help improve productivity, culture, and performance.",
+        "Hotel Manager": "As a Hotel Manager, I lead service operations, guest experience, and smooth day-to-day hospitality performance.",
+        "Travel Consultant": "As a Travel Consultant, I plan travel experiences, solve customer needs, and support satisfaction.",
+        "Event Manager": "As an Event Manager, I coordinate schedules, teams, and details to deliver smooth and engaging experiences.",
+        "Front Office Manager": "As a Front Office Manager, I focus on service quality, smooth communication, and operational efficiency.",
+        "Restaurant Manager": "As a Restaurant Manager, I balance customer service, team leadership, and efficient business operations.",
+        "Cruise Manager": "As a Cruise Manager, I ensure service quality, smooth guest experiences, and efficient operations at sea.",
+        "Catering Manager": "As a Catering Manager, I plan food services, manage teams, and deliver quality experiences at events.",
+        "Guest Relations Officer": "As a Guest Relations Officer, I focus on guest satisfaction, communication, and quick problem-solving.",
+        "Agricultural Officer": "As an Agricultural Officer, I support farming practices, sustainability, and efficient resource use in agriculture.",
+        "Farm Manager": "As a Farm Manager, I oversee operations, planning, and productivity to maintain successful agricultural performance.",
+        "Agri Business Executive": "As an Agri Business Executive, I connect agricultural products, business strategy, and market growth.",
+        "Research Associate": "As a Research Associate, I contribute to fieldwork, data collection, and innovation in agricultural research.",
+        "Horticulturist": "As a Horticulturist, I study plant growth, care, and sustainable cultivation for better agricultural outcomes.",
+        "Soil Scientist": "As a Soil Scientist, I assess land quality and use scientific analysis to support better agricultural decisions.",
+        "Food Technologist": "As a Food Technologist, I focus on food safety, quality, and product innovation in the food industry.",
+        "Dairy Manager": "As a Dairy Manager, I ensure quality control, smooth operations, and efficient production in dairy systems.",
+        "Social Worker": "As a Social Worker, I support vulnerable individuals and communities through empathy, care, and practical help.",
+        "Behavioral Analyst": "As a Behavioral Analyst, I observe patterns, understand behavior, and apply practical interventions based on evidence."
+      };
+
+      var summaryParts = [];
+      if (subject && subjectSummaries[subject]) {
+        summaryParts.push(subjectSummaries[subject]);
+      }
+      if (career && careerSummaries[career]) {
+        summaryParts.push(careerSummaries[career]);
+      }
+
+      if (summaryParts.length === 0) {
+        document.getElementById("summary").innerHTML = "<p>Select a subject and career to generate a summary.</p>";
+        return;
+      }
+
+      var skillList = [];
+      if (subject && subjectSkills[subject]) {
+        skillList = skillList.concat(subjectSkills[subject].slice(0, 3));
+      }
+      if (career && careerSkills[career]) {
+        skillList = skillList.concat(careerSkills[career].slice(0, 3));
+      }
+      skillList = skillList.filter(function(item, index, arr) {
+        return arr.indexOf(item) === index;
+      });
+
+      summaryParts.push("Strong skills include " + (skillList.length ? skillList.join(", ") : "communication, research, and problem solving") + ".");
+      summaryParts.push("This profile is well suited for opportunities in " + (career || "the selected career path") + " where practical ability, adaptability, and professional growth matter.");
+
+      document.getElementById("summary").innerHTML = summaryParts.map(function(part) {
+        return "<p>" + escapeHTML(part) + "</p>";
+      }).join("");
+      addEntranceAnimation("#summary p");
+      updateLivePreview();
+    }
+
+    function escapeHTML(value) {
+      value = value === null || value === undefined ? "" : String(value);
+      var map = {
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#39;"
+      };
+      return value.replace(/[&<>\"']/g, function(character) {
+        return map[character] || character;
+      });
+    }
+
+    function getSummaryText() {
+      var summaryElement = document.getElementById("summary");
+      var paragraphs = Array.prototype.map.call(summaryElement.querySelectorAll("p"), function(paragraph) {
+        return trimValue(paragraph.textContent);
+      }).filter(Boolean);
+      return paragraphs.length ? paragraphs.join("\n\n") : trimValue(summaryElement.textContent);
+    }
+
+    function generateResume() {
+      var name = trimValue(document.getElementById("name").value);
+      var email = trimValue(document.getElementById("email").value);
+      var phone = trimValue(document.getElementById("phone").value);
+      var location = trimValue(document.getElementById("location").value);
+      var linkedin = trimValue(document.getElementById("linkedin").value);
+      var education = trimValue(document.getElementById("education").value);
+      var subject = trimValue(document.getElementById("subject").value);
+      var career = trimValue(document.getElementById("career").value);
+      var projects = trimValue(document.getElementById("projects").value);
+      var summary = getSummaryText();
+
+      if (!name || !career) {
+        alert("Enter your name and select a career before generating your resume.");
+        return;
+      }
+
+      if (email && !document.getElementById("email").checkValidity()) {
+        alert("Enter a valid email address.");
+        return;
+      }
+
+      var subjectSkillMap = {
+        "Computer Science": ["Programming", "Data Structures", "Python", "SQL"],
+        "Commerce": ["Accounting", "Finance", "Business Communication", "Excel"],
+        "Business Administration": ["Leadership", "Operations", "Strategy", "Management"],
+        "Arts": ["Writing", "Research", "Communication", "Creativity", "Sketching", "Color Theory", "Clay Modeling", "Design Thinking"],
+        "Engineering": ["CAD", "Problem Solving", "Technical Design", "Innovation"],
+        "Law": ["Legal Research", "Drafting", "Negotiation", "Ethics"],
+        "Education": ["Teaching", "Communication", "Classroom Management", "Planning"],
+        "Science": ["Research", "Analysis", "Lab Skills", "Observation"],
+        "Mathematics": ["Statistics", "Logic", "Problem Solving", "Analytical Thinking"],
+        "Psychology": ["Empathy", "Research", "Counseling", "Observation"],
+        "Hospitality Management": ["Customer Service", "Communication", "Planning", "Teamwork"],
+        "Agriculture": ["Agronomy", "Fieldwork", "Research", "Sustainability"]
+      };
+
+      var careerSkillMap = {
+        "Web Developer": ["HTML", "CSS", "JavaScript", "Bootstrap", "React"],
+        "Data Analyst": ["Excel", "SQL", "Python", "Power BI", "Tableau"],
+        "Software Engineer": ["Java", "Python", "DSA", "Git", "Problem Solving"],
+        "Cybersecurity Analyst": ["Networking", "Linux", "Security Tools", "Python", "Ethical Hacking"],
+        "AI Engineer": ["Machine Learning", "Python", "AI Models", "Data Science", "Neural Networks"],
+        "Game Developer": ["Unity", "C#", "Game Design", "Graphics", "Animation"],
+        "Cloud Engineer": ["AWS", "Azure", "Docker", "Kubernetes", "Linux"],
+        "Database Administrator": ["SQL", "Database Design", "Optimization", "Backup", "Security"],
+        "QA Engineer": ["Testing", "Automation", "Bug Tracking", "Documentation", "Quality Assurance"],
+        "Accountant": ["Tally", "Taxation", "Finance", "Accounting", "Excel"],
+        "Financial Analyst": ["Finance", "Excel", "Forecasting", "Risk Analysis", "Business Strategy"],
+        "Business Analyst": ["Business Process", "Excel", "SQL", "Reporting", "Problem Solving"],
+        "Sales Executive": ["Communication", "Negotiation", "CRM", "Lead Generation", "Sales Strategy"],
+        "Tax Consultant": ["Taxation", "Compliance", "Finance", "Planning", "Documentation"],
+        "Auditor": ["Accounting", "Auditing", "Risk Control", "Finance", "Compliance"],
+        "Investment Banker": ["Finance", "Valuation", "Market Analysis", "Risk", "Strategy"],
+        "Retail Manager": ["Retail Operations", "Customer Service", "Sales", "Inventory", "Leadership"],
+        "E-commerce Manager": ["Digital Marketing", "Sales Funnel", "Analytics", "Operations", "Strategy"],
+        "Business Manager": ["Leadership", "Operations", "Planning", "Strategy", "Communication"],
+        "HR Executive": ["Recruitment", "HRMS", "Communication", "Employee Relations", "Training"],
+        "Marketing Manager": ["Marketing", "Branding", "Campaign Planning", "Analytics", "Communication"],
+        "Operations Analyst": ["Operations", "Process Mapping", "Excel", "Efficiency", "Reporting"],
+        "Project Manager": ["Planning", "Leadership", "Scheduling", "Risk Management", "Communication"],
+        "Supply Chain Manager": ["Logistics", "Procurement", "Operations", "Planning", "Efficiency"],
+        "Entrepreneur": ["Business Planning", "Innovation", "Strategy", "Leadership", "Risk Management"],
+        "Event Manager": ["Event Planning", "Coordination", "Communication", "Leadership", "Time Management"],
+        "Digital Business Analyst": ["Business Analysis", "Digital Strategy", "Reporting", "CRM", "Excel"],
+        "Content Writer": ["Writing", "Research", "Editing", "SEO", "Content Strategy"],
+        "Journalist": ["Research", "Reporting", "Writing", "Interviews", "Communication"],
+        "Blue Pottery Artist": ["Clay Work", "Handcrafting", "Color Mixing", "Traditional Art", "Design"],
+        "Sculptor": ["Sculpting", "Clay Modeling", "Form Study", "Texture Design", "Creative Thinking"],
+        "Painter": ["Sketching", "Color Theory", "Composition", "Brush Techniques", "Visual Art"],
+        "Textile Designer": ["Fabric Design", "Pattern Making", "Color Theory", "Visual Perception", "Creativity"],
+        "Fashion Designer": ["Fashion Sketching", "Trend Analysis", "Textiles", "Design", "Creativity"],
+        "Concept Artist": ["Storyboarding", "Character Design", "Digital Illustration", "Visual Storytelling", "Creativity"],
+        "Illustrator": ["Sketching", "Digital Art", "Color Theory", "Composition", "Visual Communication"],
+        "Graphic Designer": ["Adobe Photoshop", "Typography", "Layout Design", "Branding", "Creativity"],
+        "Photographer": ["Composition", "Camera Skills", "Lighting", "Editing", "Visual Storytelling"],
+        "Animator": ["Animation", "Storyboarding", "Motion Design", "Creative Editing", "Visual Design"],
+        "Teacher": ["Teaching", "Communication", "Lesson Planning", "Classroom Management", "Mentoring"],
+        "Digital Marketer": ["SEO", "Social Media", "Analytics", "Content Creation", "Marketing"],
+        "Civil Engineer": ["AutoCAD", "Construction", "Project Planning", "Surveying", "Design"],
+        "Mechanical Engineer": ["Design", "Thermodynamics", "Manufacturing", "CAD", "Problem Solving"],
+        "Electrical Engineer": ["Circuit Design", "PLC", "Power Systems", "Troubleshooting", "Automation"],
+        "Robotics Engineer": ["Automation", "Sensors", "Embedded Systems", "Programming", "Control Systems"],
+        "Production Engineer": ["Process Planning", "Quality Control", "Manufacturing", "Optimization", "Safety"],
+        "Architect": ["Design", "Planning", "Visualization", "Construction", "Innovation"],
+        "Automotive Engineer": ["Vehicle Design", "Mechanics", "Testing", "CAD", "Problem Solving"],
+        "Chemical Engineer": ["Process Design", "Laboratory Skills", "Safety", "Innovation", "Analysis"],
+        "Advocate": ["Legal Research", "Drafting", "Negotiation", "Public Speaking", "Case Analysis"],
+        "Legal Advisor": ["Contract Law", "Compliance", "Research", "Communication", "Documentation"],
+        "Corporate Lawyer": ["Corporate Law", "Contract Drafting", "Legal Research", "Compliance", "Negotiation"],
+        "Legal Consultant": ["Legal Research", "Documentation", "Compliance", "Client Handling", "Analysis"],
+        "Judge": ["Legal Interpretation", "Ethics", "Argumentation", "Law", "Decision Making"],
+        "Public Prosecutor": ["Case Preparation", "Law", "Research", "Argumentation", "Evidence"],
+        "Notary": ["Documentation", "Verification", "Legal Process", "Attention to Detail", "Compliance"],
+        "Compliance Officer": ["Regulations", "Auditing", "Risk Management", "Compliance", "Documentation"],
+        "Legal Analyst": ["Legal Research", "Data Analysis", "Policy Review", "Documentation", "Communication"],
+        "Academic Coordinator": ["Mentoring", "Administration", "Scheduling", "Communication", "Planning"],
+        "Education Consultant": ["Counseling", "Planning", "Communication", "Curriculum", "Assessment"],
+        "School Administrator": ["Administration", "Leadership", "Planning", "Communication", "Problem Solving"],
+        "Curriculum Designer": ["Planning", "Assessment", "Instruction", "Communication", "Teaching"],
+        "Counselor": ["Counseling", "Empathy", "Listening", "Problem Solving", "Communication"],
+        "Librarian": ["Research", "Cataloging", "Information Management", "Communication", "Organization"],
+        "Special Educator": ["Teaching", "Assessment", "Patience", "Communication", "Planning"],
+        "Research Assistant": ["Research", "Data Analysis", "Documentation", "Experimentation", "Observation"],
+        "Scientist": ["Research", "Analysis", "Lab Skills", "Experimentation", "Innovation"],
+        "Lab Analyst": ["Testing", "Lab Skills", "Documentation", "Analysis", "Safety"],
+        "Biotech Analyst": ["Biotech", "Research", "Data Analysis", "Laboratory Skills", "Innovation"],
+        "Pharmacist": ["Medication Knowledge", "Research", "Safety", "Communication", "Healthcare"],
+        "Environmental Scientist": ["Research", "Sustainability", "Analysis", "Fieldwork", "Reporting"],
+        "Nutritionist": ["Health Assessment", "Diet Planning", "Communication", "Research", "Analysis"],
+        "Forensic Analyst": ["Evidence Analysis", "Research", "Documentation", "Observation", "Critical Thinking"],
+        "Statistician": ["Statistics", "Data Analysis", "Excel", "Probability", "Research"],
+        "Research Analyst": ["Research", "Statistics", "Data Analysis", "Reporting", "Insight Generation"],
+        "Actuarial Analyst": ["Probability", "Modeling", "Risk", "Statistics", "Excel"],
+        "Mathematician": ["Logic", "Statistics", "Problem Solving", "Analysis", "Modeling"],
+        "Operations Research Analyst": ["Optimization", "Data Analysis", "Modeling", "Logic", "Decision Making"],
+        "Quant Analyst": ["Statistics", "Modeling", "Risk", "Programming", "Finance"],
+        "Financial Risk Analyst": ["Risk Analysis", "Finance", "Modeling", "Reporting", "Statistics"],
+        "Clinical Psychologist": ["Assessment", "Empathy", "Research", "Listening", "Behavior Analysis"],
+        "Career Counselor": ["Counseling", "Communication", "Planning", "Assessment", "Motivation"],
+        "Child Psychologist": ["Observation", "Empathy", "Research", "Communication", "Patience"],
+        "Industrial Psychologist": ["Assessment", "HR", "Communication", "Research", "Behavior Analysis"],
+        "Hotel Manager": ["Customer Service", "Operations", "Hospitality", "Teamwork", "Planning"],
+        "Travel Consultant": ["Tour Planning", "Communication", "Customer Service", "Problem Solving", "Sales"],
+        "Event Manager": ["Event Planning", "Coordination", "Communication", "Leadership", "Time Management"],
+        "Front Office Manager": ["Customer Service", "Hospitality", "Operations", "Leadership", "Communication"],
+        "Restaurant Manager": ["Hospitality", "Customer Service", "Leadership", "Operations", "Teamwork"],
+        "Cruise Manager": ["Hospitality", "Operations", "Customer Service", "Communication", "Leadership"],
+        "Catering Manager": ["Planning", "Service", "Communication", "Operations", "Leadership"],
+        "Guest Relations Officer": ["Customer Service", "Communication", "Hospitality", "Problem Solving", "Leadership"],
+        "Agricultural Officer": ["Agronomy", "Fieldwork", "Research", "Planning", "Sustainability"],
+        "Farm Manager": ["Crop Management", "Operations", "Leadership", "Planning", "Problem Solving"],
+        "Agri Business Executive": ["Agriculture", "Marketing", "Supply Chain", "Communication", "Strategy"],
+        "Research Associate": ["Field Research", "Agriculture", "Data Analysis", "Documentation", "Innovation"],
+        "Horticulturist": ["Plant Science", "Research", "Planning", "Sustainability", "Observation"],
+        "Soil Scientist": ["Research", "Analysis", "Fieldwork", "Sustainability", "Documentation"],
+        "Food Technologist": ["Food Safety", "Quality Control", "Research", "Analysis", "Innovation"],
+        "Dairy Manager": ["Operations", "Quality Control", "Planning", "Leadership", "Animal Care"]
+      };
+
+      var recommendedSkills = [];
+      if (career && careerSkillMap[career]) {
+        recommendedSkills = recommendedSkills.concat(careerSkillMap[career]);
+      }
+      if (subject && subjectSkillMap[subject]) {
+        recommendedSkills = recommendedSkills.concat(subjectSkillMap[subject]);
+      }
+      recommendedSkills = recommendedSkills.filter(function(item, index, arr) {
+        return arr.indexOf(item) === index;
+      });
+      if (recommendedSkills.length === 0) {
+        recommendedSkills = ["Communication", "Research", "Problem Solving"];
+      }
+
+      var chosenSkills = Array.prototype.map.call(document.querySelectorAll("#skillsArea .skill-box.selected"), function(skill) {
+        return skill.textContent;
+      });
+      if (chosenSkills.length) {
+        recommendedSkills = chosenSkills;
+      }
+      var skillMarkup = recommendedSkills.map(function(skill) {
+        return '<span class="skill-box">' + escapeHTML(skill) + '</span>';
+      }).join("");
+      var summaryMarkup = summary.split(/\n{2,}/).filter(Boolean).map(function(paragraph) {
+        return "<p>" + escapeHTML(paragraph) + "</p>";
+      }).join("");
+
+      var contactItems = [
+        email ? '<span>✉ ' + escapeHTML(email) + '</span>' : '',
+        phone ? '<span>☎ ' + escapeHTML(phone) + '</span>' : '',
+        location ? '<span>⌖ ' + escapeHTML(location) + '</span>' : '',
+        linkedin ? '<span>in ' + escapeHTML(linkedin) + '</span>' : ''
+      ].filter(Boolean).join("");
+      var headline = [career, subject].filter(Boolean).map(escapeHTML).join(" &nbsp;·&nbsp; ");
+      var resume = '<article class="resume-sheet">' +
+        '<header class="resume-header">' +
+          '<h1>' + escapeHTML(name) + '</h1>' +
+          (headline ? '<p class="resume-headline">' + headline + '</p>' : '') +
+          (contactItems ? '<div class="resume-contact">' + contactItems + '</div>' : '') +
+        '</header>' +
+        '<div class="resume-grid">' +
+          '<div class="resume-main">' +
+            (summary ? '<section class="resume-section"><h2>Profile</h2>' + summaryMarkup + '</section>' : '') +
+            (projects ? '<section class="resume-section"><h2>Projects &amp; Experience</h2><p>' + escapeHTML(projects) + '</p></section>' : '') +
+          '</div>' +
+          '<aside class="resume-aside">' +
+            (education ? '<section class="resume-section"><h2>Education</h2><p>' + escapeHTML(education) + '</p></section>' : '') +
+            (skillMarkup ? '<section class="resume-section"><h2>Skills</h2><div class="resume-skills">' + skillMarkup + '</div></section>' : '') +
+          '</aside>' +
+        '</div>' +
+      '</article>';
+
+      var thankYou = document.getElementById("thankYouMessage");
+      var resumePreview = document.getElementById("resumePreview");
+      resumePreview.className = "resume";
+      resumePreview.style.display = "block";
+      resumePreview.innerHTML = resume;
+      if (thankYou) {
+        thankYou.style.display = "block";
+        addEntranceAnimation("#thankYouMessage");
+      }
+      addEntranceAnimation("#resumePreview > *");
+      animateOnTap(document.getElementById("resumePreview"));
+      updateLivePreview();
+      document.getElementById("thankYouMessage").scrollIntoView({ behavior: "smooth", block: "nearest" });
+    }
+
+    function updateLivePreview() {
+      var name = trimValue(document.getElementById("name").value);
+      var email = trimValue(document.getElementById("email").value);
+      var phone = trimValue(document.getElementById("phone").value);
+      var location = trimValue(document.getElementById("location").value);
+      var linkedin = trimValue(document.getElementById("linkedin").value);
+      var career = trimValue(document.getElementById("career").value);
+      var subject = trimValue(document.getElementById("subject").value);
+      var summary = getSummaryText();
+      var education = trimValue(document.getElementById("education").value);
+      var projects = trimValue(document.getElementById("projects").value);
+      var selectedSkills = Array.prototype.map.call(document.querySelectorAll("#skillsArea .skill-box.selected"), function(skill) {
+        return skill.textContent;
+      });
+      var allSkills = Array.prototype.map.call(document.querySelectorAll("#skillsArea .skill-box"), function(skill) {
+        return skill.textContent;
+      });
+      var displayedSkills = selectedSkills.length ? selectedSkills : allSkills.slice(0, 8);
+      var contact = [];
+
+      document.getElementById("previewName").textContent = name || "Your Name";
+      document.getElementById("previewCareer").textContent = [subject, career].filter(Boolean).join(" | ") || "Your target role will appear here";
+      if (email) contact.push("✉ " + email);
+      if (phone) contact.push("☎ " + phone);
+      if (location) contact.push("⌖ " + location);
+      if (linkedin) contact.push("in " + linkedin);
+      document.getElementById("previewContact").textContent = contact.join("  •  ") || "✉ yourname@email.com  •  +91 98765 43210  •  Your location";
+      document.getElementById("previewSummary").textContent = summary || "A concise professional summary will appear here.";
+      document.getElementById("previewEducation").textContent = education || subject || "Add your education details.";
+      document.getElementById("previewProjects").textContent = projects || "Add a project or experience.";
+
+      var skillsNode = document.getElementById("previewSkills");
+      skillsNode.innerHTML = "";
+      (displayedSkills.length ? displayedSkills : ["Suggested skills"]).forEach(function(skill) {
+        var chip = document.createElement("span");
+        chip.textContent = skill;
+        skillsNode.appendChild(chip);
+      });
+    }
+
+    function toggleSkill(button) {
+      var isSelected = button.classList.toggle("selected");
+      button.setAttribute("aria-pressed", String(isSelected));
+      updateLivePreview();
+    }
+
+    function navigateTo(sectionId, button) {
+      if (button) {
+        document.querySelectorAll(".side-nav button").forEach(function(item) {
+          item.classList.toggle("active", item === button);
+        });
+      }
+      var section = document.getElementById(sectionId);
+      if (section) {
+        section.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+    }
+
+    function setActiveNavigation(button) {
+      if (!button) {
+        return;
+      }
+      document.querySelectorAll(".side-nav button").forEach(function(item) {
+        item.classList.toggle("active", item === button);
+      });
+    }
+
+    function openCareerChat(button) {
+      setActiveNavigation(button);
+      var chat = document.getElementById("careerChat");
+      chat.hidden = false;
+      document.body.style.overflow = "hidden";
+      document.getElementById("careerChatInput").focus();
+    }
+
+    function closeCareerChat() {
+      document.getElementById("careerChat").hidden = true;
+      document.body.style.overflow = "";
+    }
+
+    function resetCareerChat() {
+      var messages = document.getElementById("careerChatMessages");
+      messages.innerHTML = "";
+      appendCareerChatMessage("Hi! I can help you explore careers, skills, learning plans, and job-search advice. Tell me what you are studying or which role you are curious about.", "assistant");
+      var input = document.getElementById("careerChatInput");
+      input.value = "";
+      input.focus();
+    }
+
+    function appendCareerChatMessage(message, sender) {
+      var messages = document.getElementById("careerChatMessages");
+      var bubble = document.createElement("div");
+      bubble.className = "career-chat-message" + (sender === "user" ? " user" : "");
+      bubble.textContent = message;
+      messages.appendChild(bubble);
+      requestAnimationFrame(function() {
+        messages.scrollTop = messages.scrollHeight;
+      });
+    }
+
+    function updateCareerToolRoles() {
+      var subject = document.getElementById("careerToolSubject").value;
+      var roleSelect = document.getElementById("careerToolRole");
+      var roles = subjectCareerMap[subject] || [];
+      roleSelect.innerHTML = '<option value="">Choose a career</option>' + roles.map(function(role) {
+        return '<option value="' + escapeHTML(role) + '">' + escapeHTML(role) + '</option>';
+      }).join("");
+    }
+
+    function renderCareerAdvice(result, career, subject) {
+      var container = document.getElementById("careerGuideResult");
+      container.innerHTML = "";
+
+      var heading = document.createElement("h3");
+      heading.textContent = career;
+      container.appendChild(heading);
+
+      var context = document.createElement("p");
+      context.textContent = (subject ? "A possible direction with your " + subject + " background is " : "One career direction to explore is ") + career +
+        ". Build practical examples alongside your learning and compare role requirements in current job listings.";
+      container.appendChild(context);
+
+      var skillsHeading = document.createElement("h4");
+      skillsHeading.textContent = "Useful skills to build";
+      container.appendChild(skillsHeading);
+      var skillsList = document.createElement("ul");
+      (careerSkills[career] || ["Communication", "Problem Solving", "Research"]).forEach(function(skill) {
+        var item = document.createElement("li");
+        item.textContent = skill;
+        skillsList.appendChild(item);
+      });
+      container.appendChild(skillsList);
+
+      var roadmapHeading = document.createElement("h4");
+      roadmapHeading.textContent = "A practical way to start";
+      container.appendChild(roadmapHeading);
+      var roadmap = document.createElement("p");
+      roadmap.textContent = "1. Learn the fundamentals of " + career + ".\n2. Practice the skills above with a small project or realistic task.\n3. Add your work to a portfolio or resume.\n4. Review entry-level job descriptions and fill the skill gaps you find.";
+      container.appendChild(roadmap);
+
+      var summary = result || getCareerSummary(career);
+      if (summary) {
+        var summaryHeading = document.createElement("h4");
+        summaryHeading.textContent = "Role overview";
+        container.appendChild(summaryHeading);
+        var summaryText = document.createElement("p");
+        summaryText.textContent = summary;
+        container.appendChild(summaryText);
+      }
+    }
+
+    function getCareerSummary(career) {
+      var careerSummaryParagraphs = document.querySelectorAll("#summary p");
+      if (document.getElementById("career").value === career && careerSummaryParagraphs.length) {
+        return careerSummaryParagraphs[careerSummaryParagraphs.length > 1 ? 1 : 0].textContent;
+      }
+      return "Explore entry-level " + career + " work by reviewing real job descriptions, trying a related task, and comparing the required skills with what you enjoy doing.";
+    }
+
+    function exploreCareer() {
+      var subject = document.getElementById("careerToolSubject").value;
+      var career = document.getElementById("careerToolRole").value;
+      if (!subject || !career) {
+        var result = document.getElementById("careerGuideResult");
+        result.textContent = "Choose a study field and a career to see recommended skills and a starter roadmap.";
+        return;
+      }
+      renderCareerAdvice("", career, subject);
+    }
+
+    function openCareerTools(button) {
+      setActiveNavigation(button);
+      var subjectSelect = document.getElementById("careerToolSubject");
+      var currentSubject = document.getElementById("subject").value;
+      if (currentSubject && subjectCareerMap[currentSubject]) {
+        subjectSelect.value = currentSubject;
+      }
+      updateCareerToolRoles();
+
+      var currentCareer = document.getElementById("career").value;
+      var roles = subjectCareerMap[subjectSelect.value] || [];
+      if (currentCareer && roles.indexOf(currentCareer) !== -1) {
+        document.getElementById("careerToolRole").value = currentCareer;
+      } else if (roles.length) {
+        document.getElementById("careerToolRole").value = roles[0];
+      }
+      if (subjectSelect.value && document.getElementById("careerToolRole").value) {
+        exploreCareer();
+      }
+      navigateTo("careerSection");
+    }
+
+    function findCareerInMessage(message) {
+      var careers = Object.keys(careerSkills);
+      var normalizedMessage = message.toLowerCase();
+      for (var index = 0; index < careers.length; index++) {
+        if (normalizedMessage.indexOf(careers[index].toLowerCase()) !== -1) {
+          return careers[index];
+        }
+      }
+      return trimValue(document.getElementById("career").value) ||
+        trimValue(document.getElementById("careerToolRole").value);
+    }
+
+    function buildCareerChatReply(message) {
+      var normalizedMessage = message.toLowerCase();
+      var subject = trimValue(document.getElementById("careerToolSubject").value) ||
+        trimValue(document.getElementById("subject").value);
+      var career = findCareerInMessage(message);
+
+      if (/\b(salary|pay|package|income|earnings?)\b/.test(normalizedMessage)) {
+        return "Pay depends on your location, experience, industry, and the exact role, so I don't want to guess a number. Compare recent entry-level job listings in your area and note the skills employers repeatedly ask for. Tell me your location and target role if you want help making a comparison checklist.";
+      }
+
+      if (/\bcareers?\b|\broles?\b|\bjobs?\b|\boptions?\b|\bfield\b|\bsuitable\b|\bchoose\b|\bconfused\b/.test(normalizedMessage)) {
+        var mentionedSubject = Object.keys(subjectCareerMap).filter(function(field) {
+          return normalizedMessage.indexOf(field.toLowerCase()) !== -1;
+        })[0];
+        var chosenSubject = mentionedSubject || subject;
+        if (chosenSubject && subjectCareerMap[chosenSubject]) {
+          return "With a " + chosenSubject + " background, you could explore: " +
+            subjectCareerMap[chosenSubject].slice(0, 6).join(", ") +
+            ". Compare each role's day-to-day work with what you enjoy, then try a small project or introductory course before choosing.";
+        }
+        return "Tell me your study field, subjects you enjoy, and whether you prefer coding, analysis, design, communication, or hands-on work. I can suggest a few matching roles and a way to test each one.";
+      }
+
+      if (/\bskills?\b|\blearn(?:ing)?\b|\bstudy\b|\bimprov(?:e|ing|ement)\b|\bbegin\b|\bstart\b/.test(normalizedMessage)) {
+        if (!career) {
+          return "Which role are you interested in? Share the role name and your current level (student, fresher, or experienced), and I'll suggest a focused set of skills to start with.";
+        }
+        var skills = careerSkills[career] || ["Communication", "Problem Solving", "Research"];
+        return "For " + career + ", start with these skills: " + skills.join(", ") +
+          ". Pick one foundational skill, practice it with a small project, and write down what you built. If you tell me your current level, I can make the learning plan more specific.";
+      }
+
+      if (/\broadmap\b|\bplan\b|\bmonth\b|\bweek\b|\bstep\b|\bpath\b/.test(normalizedMessage)) {
+        if (!career) {
+          return "Share the career role you want to target and your current level. I can then lay out a practical starter plan.";
+        }
+        var roadmapSkills = careerSkills[career] || ["Communication", "Problem Solving", "Research"];
+        return "A starter plan for " + career + ":\n1. Learn the basics of " + roadmapSkills.slice(0, 2).join(" and ") +
+          ".\n2. Practice the remaining core skills: " + roadmapSkills.slice(2).join(", ") +
+          ".\n3. Build one small project that demonstrates those skills.\n4. Add the project to your resume and compare it against entry-level job listings.";
+      }
+
+      if (/\bresume\b|\bcv\b|\bportfolio\b|\bproject\b|\binterview\b|\bapply\b/.test(normalizedMessage)) {
+        if (!career) {
+          return "For stronger job applications, show a specific project, explain your own contribution, and connect it to the role's requirements. Which career are you applying for? I can tailor the advice.";
+        }
+        var applicationSkills = careerSkills[career] || [];
+        return "For a " + career + " application, add a project that demonstrates " +
+          (applicationSkills.slice(0, 3).join(", ") || "relevant practical skills") +
+          ". In your resume, describe the problem, what you personally did, and the result. Practice explaining the key decisions you made.";
+      }
+
+      var context = subject ? " I see you selected " + subject + (career ? " and " + career : "") + " in the career tools." : "";
+      return "I can help with career options, skills to learn, a starter roadmap, resume or portfolio advice, and interview preparation." +
+        context + " What would you like to figure out first?";
+    }
+
+    function submitCareerChatMessage(message) {
+      var question = trimValue(message);
+      if (!question) {
+        return;
+      }
+      appendCareerChatMessage(question, "user");
+      appendCareerChatMessage(buildCareerChatReply(question), "assistant");
+    }
+
+    function sendCareerMessage(event) {
+      event.preventDefault();
+      var input = document.getElementById("careerChatInput");
+      submitCareerChatMessage(input.value);
+      input.value = "";
+      input.focus();
+    }
+
+    function askCareerPrompt(prompt) {
+      submitCareerChatMessage(prompt);
+      document.getElementById("careerChatInput").focus();
+    }
+
+    document.addEventListener("keydown", function(event) {
+      if (event.key === "Escape" && !document.getElementById("careerChat").hidden) {
+        closeCareerChat();
+      }
+    });
+
+    document.getElementById("careerChat").addEventListener("click", function(event) {
+      if (event.target === this) {
+        closeCareerChat();
+      }
+    });
+
+    function getSavedResumes() {
+      var saved = localStorage.getItem("resumeai-saved-resumes");
+      return saved ? JSON.parse(saved) : [];
+    }
+
+    function saveResume() {
+      var name = trimValue(document.getElementById("name").value);
+      var career = trimValue(document.getElementById("career").value);
+      if (!name) {
+        alert("Enter your name before saving this draft.");
+        document.getElementById("name").focus();
+        return;
+      }
+
+      var draft = {
+        name: name,
+        email: document.getElementById("email").value,
+        phone: document.getElementById("phone").value,
+        location: document.getElementById("location").value,
+        linkedin: document.getElementById("linkedin").value,
+        education: document.getElementById("education").value,
+        subject: document.getElementById("subject").value,
+        career: career,
+        projects: document.getElementById("projects").value,
+        summary: getSummaryText(),
+        savedAt: new Date().toISOString()
+      };
+      var resumes = getSavedResumes();
+      resumes.unshift(draft);
+      localStorage.setItem("resumeai-saved-resumes", JSON.stringify(resumes.slice(0, 10)));
+      renderSavedResumes();
+      alert("Draft saved in this browser.");
+    }
+
+    function renderSavedResumes() {
+      var resumes = getSavedResumes();
+      var list = document.getElementById("savedList");
+      if (!resumes.length) {
+        list.innerHTML = '<p class="saved-empty">No saved resumes yet. Use Save draft to keep your details.</p>';
+        return;
+      }
+      list.innerHTML = resumes.map(function(resume, index) {
+        return '<div class="saved-item"><span>' + escapeHTML(resume.name) + (resume.career ? ' · ' + escapeHTML(resume.career) : '') + '</span><button type="button" class="saved-open" onclick="restoreResume(' + index + ')">Open</button></div>';
+      }).join("");
+    }
+
+    function restoreResume(index) {
+      var resume = getSavedResumes()[index];
+      if (!resume) {
+        alert("That saved resume could not be found.");
+        renderSavedResumes();
+        return;
+      }
+      ["name", "email", "phone", "location", "linkedin", "education", "subject", "career", "projects"].forEach(function(id) {
+        document.getElementById(id).value = resume[id] || "";
+      });
+      if (resume.subject) {
+        updateCareerOptions();
+        document.getElementById("career").value = resume.career || "";
+        suggestSkills();
+      }
+      document.getElementById("summary").textContent = resume.summary || "";
+      updateLivePreview();
+      navigateTo("builderSection");
+    }
+
+    function generateCoverLetter() {
+      var name = trimValue(document.getElementById("name").value) || "Your Name";
+      var career = trimValue(document.getElementById("career").value) || "the role";
+      var summary = getSummaryText();
+      var projects = trimValue(document.getElementById("projects").value);
+      var letter = "Dear Hiring Manager,\n\nI am writing to express my interest in the " + career + " position. " +
+        (summary || "I am motivated to contribute my skills, learn quickly, and deliver thoughtful work.") +
+        (projects ? "\n\nThrough my projects and experience, " + projects : "") +
+        "\n\nThank you for your time and consideration. I would welcome the opportunity to discuss how I can contribute to your team.\n\nSincerely,\n" + name;
+      document.getElementById("coverLetter").value = letter;
+      document.getElementById("coverLetter").focus();
+    }
+
+    function downloadResumePdf() {
+      var resumePreview = document.getElementById("resumePreview");
+      if (resumePreview.style.display !== "block") {
+        generateResume();
+        if (resumePreview.style.display !== "block") {
+          return;
+        }
+      }
+      setTimeout(function() {
+        window.print();
+      }, 150);
+    }
+
+    document.querySelectorAll("#builderSection input, #builderSection textarea, #builderSection select").forEach(function(field) {
+      field.addEventListener("input", updateLivePreview);
+      field.addEventListener("change", updateLivePreview);
+    });
+    renderSavedResumes();
+    updateLivePreview();
+    initializeLoginState();
+  </script>
+</body>
+</html>
